@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#080c14">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.67-3.13 9.02-7 10.15-3.87-1.13-7-5.48-7-10.15V6.3l7-3.12z'/%3E%3C/svg%3E">
+  <title>{{ config.SERVER_NAME }} // Control Console</title>
+  <style>
+    :root {
+      --bg-main: #080c14;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(56, 189, 248, 0.18);
+      --card-inner: rgba(30, 41, 59, 0.55);
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.35);
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --indigo: #6366f1;
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #0e1e38 0%, var(--bg-main) 65%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 14px 10px 40px;
+    }
+    .app-shell { width: 100%; max-width: 620px; }
+
+    /* Top Executive Header */
+    .top-header {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(99,102,241,0.2));
+      border: 1px solid var(--cyan);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cyan);
+    }
+    .brand-text h1 { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; color: #fff; }
+    .brand-text p { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 1px; }
+    
+    .status-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+      color: var(--emerald); background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35); padding: 5px 10px; border-radius: 20px;
+    }
+    .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
+
+    /* Modern 5-Tab Navigation */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      padding: 9px 2px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
+    .tab-btn.active {
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.2) 0%, rgba(30, 41, 59, 0.8) 100%);
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    /* Tab Panes */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; animation: fadeIn 0.25s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .card-head h2 { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--cyan); text-transform: uppercase; }
+    .card-head .meta { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+
+    /* Gauges */
+    .gauge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .gauge-item {
+      background: var(--card-inner);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .gauge-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .gauge-val { font-size: 18px; font-weight: 800; color: #fff; margin: 4px 0 6px; }
+    .bar-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+    /* Buttons */
+    .btn-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .btn-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .action-button {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .action-button:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.1); }
+    .action-button .btn-sub { font-size: 9px; color: var(--text-muted); font-weight: 500; }
+    
+    .btn-cyan { border-color: rgba(56, 189, 248, 0.4); color: #bae6fd; }
+    .btn-emerald { border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0; }
+    .btn-rose { border-color: rgba(244, 63, 94, 0.4); color: #fda4af; }
+    .btn-amber { border-color: rgba(245, 158, 11, 0.4); color: #fde68a; }
+    .btn-indigo { border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe; }
+    
+    .btn-panic-glow {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.3), rgba(225, 29, 72, 0.15));
+      border: 1px solid rgba(244, 63, 94, 0.8);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.35);
+    }
+
+    /* Data Rows */
+    .data-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 11px; }
+    .data-row:last-child { border-bottom: none; }
+    .data-k { color: var(--text-muted); font-weight: 600; }
+    .data-v { color: #fff; font-weight: 700; text-align: right; }
+
+    /* Media Box */
+    .media-box {
+      margin-top: 10px;
+      background: #000;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .media-box img, .media-box video { width: 100%; display: block; }
+    .media-toolbar {
+      padding: 10px 12px;
+      background: var(--card-inner);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+    }
+    .media-toolbar button, .media-toolbar a {
+      background: #0f172a;
+      border: 1px solid var(--cyan);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Process Table */
+    .proc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 11px;
+    }
+    .proc-name { font-weight: 700; color: #fff; }
+    .proc-pid { font-size: 9px; color: var(--text-muted); }
+    .proc-kill-btn {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Form Fields for Config */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 5px; }
+    .form-input {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 11px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow); }
+    .form-switch { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .modal-card {
+      width: 100%; max-width: 380px;
+      background: #0f172a;
+      border: 1px solid var(--cyan);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(56, 189, 248, 0.3);
+    }
+    .modal-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .modal-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 8px; }
+    .modal-actions button { flex: 1; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; }
+    .btn-modal-confirm { background: var(--rose); color: #fff; }
+    .btn-modal-cancel { background: #1e293b; color: var(--text-dim); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #0f172a; border: 1px solid var(--cyan); color: #fff;
+      padding: 10px 20px; border-radius: 20px; font-size: 11px; font-weight: 800;
+      display: none; z-index: 10000; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    
+    <!-- Top Header -->
+    <div class="top-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="brand-text">
+          <h1 id="top-hostname">{{ hw.hostname }}</h1>
+          <p id="top-user">{{ hw.user }} // SESIÓN PROTEGIDA</p>
+        </div>
+      </div>
+      <div class="status-badge">
+        <div class="pulse-dot"></div>
+        <span>ONLINE</span>
+      </div>
+    </div>
+
+    <!-- 5-Tab Navigation -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('telemetry')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Métricas</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('surveillance')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Vigilancia</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('security')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Seguridad</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('processes')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Procesos</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('config')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Ajustes</span>
+      </button>
+    </nav>
+
+    <!-- TAB 1: TELEMETRÍA -->
+    <div id="tab-telemetry" class="tab-pane active">
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>TELEMETRÍA DEL SISTEMA</h2>
+          <span class="meta" id="live-uptime">Uptime: {{ hw.uptime.uptime_str }}</span>
+        </div>
+
+        <div class="gauge-grid">
+          <div class="gauge-item">
+            <div class="gauge-label">Carga de CPU</div>
+            <div class="gauge-val" id="val-cpu">--%</div>
+            <div class="bar-track"><div class="bar-fill" id="bar-cpu" style="width: 0%; background: var(--cyan);"></div></div>
+          </div>
+          <div class="gauge-item">
+            <div class="gauge-label">Memoria RAM</div>
+            <div class="gauge-val" id="val-ram">{{ hw.ram.used_gb }}/{{ hw.ram.total_gb }} GB</div>
+            <div class="bar-track"><div class="bar-fill" id="bar-ram" style="width: {{ hw.ram.pct }}%; background: var(--emerald);"></div></div>
+          </div>
+        </div>
+
+        <div id="disks-container">
+          {% for d in hw.disks %}
+          <div class="gauge-item" style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px;">
+              <span style="color: var(--text-muted); font-weight: 700;">Unidad {{ d.drive }}</span>
+              <span style="color: #fff; font-weight: 800;">{{ d.free_gb }} GB libres ({{ d.pct }}% ocupado)</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width: {{ d.pct }}%; background: var(--indigo);"></div></div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div style="margin-top: 10px;">
+          <button class="action-button btn-cyan" style="width: 100%; text-align: center; align-items: center;" onclick="execAction('/api/send_boot_alert', 'Transmitiendo reporte a canales...')">
+            <span>📡 TRANSMITIR INFORME A CANALES DE ALERTA</span>
+            <span class="btn-sub">Envía telemetría y enlaces activos a Discord / Telegram / WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>ESPECIFICACIONES DEL HARDWARE</h2>
+          <span class="meta" style="color: var(--emerald);">DETECTADO</span>
+        </div>
+        <div class="data-row"><span class="data-k">Procesador</span><span class="data-v">{{ hw.cpu }}</span></div>
+        <div class="data-row"><span class="data-k">Tarjeta Gráfica</span><span class="data-v">{{ hw.gpu }}</span></div>
+        <div class="data-row"><span class="data-k">Memoria Física</span><span class="data-v">{{ hw.ram.total_gb }} GB RAM</span></div>
+        <div class="data-row"><span class="data-k">Ventana en Foco</span><span class="data-v" id="live-active-win" style="color: var(--cyan); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ hw.active_window }}</span></div>
+        <div class="data-row"><span class="data-k">Modo Juegos/Carga</span><span class="data-v" id="live-game-mode" style="color: var(--emerald);">0% CARGA RESIDUAL</span></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: VIGILANCIA -->
+    <div id="tab-surveillance" class="tab-pane">
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>CENTRO FORENSE & CAPTURA</h2>
+          <span class="meta" style="color: var(--emerald);">100% EN RAM</span>
+        </div>
+
+        <div class="btn-row-2">
+          <button class="action-button btn-cyan" onclick="loadMedia('/api/screenshot', 'Captura de Pantalla GDI')">
+            <span>CAPTURAR PANTALLA</span>
+            <span class="btn-sub">Hardware GDI directo</span>
+          </button>
+          <button class="action-button btn-emerald" onclick="loadMedia('/api/webcam', 'Sensor de Cámara')">
+            <span>FOTO WEBCAM</span>
+            <span class="btn-sub">Sensor óptico en vivo</span>
+          </button>
+        </div>
+
+        <div class="btn-row-2" style="margin-top: 4px;">
+          <button class="action-button btn-indigo" onclick="generateForensicClip()">
+            <span>EXPORTAR VIDEO (5 MIN)</span>
+            <span class="btn-sub">Pantalla + PiP Webcam</span>
+          </button>
+          <button class="action-button btn-amber" onclick="execAction('/api/send_evidence', 'Transmitiendo evidencia a canales...')">
+            <span>ENVIAR EVIDENCIA</span>
+            <span class="btn-sub">Guarda foto en canales</span>
+          </button>
+        </div>
+
+        <!-- Visor Multimedia -->
+        <div class="media-box" id="media-container" style="display: none;">
+          <img id="media-img" style="display: none;" alt="Preview">
+          <video id="media-video" controls style="display: none;"></video>
+          <div class="media-toolbar">
+            <span id="media-label" style="color: var(--text-dim);">Evidencia Forense</span>
+            <div style="display: flex; gap: 6px;">
+              <a id="media-dl" download="evidencia.jpg">GUARDAR</a>
+              <button onclick="closeMediaViewer()">CERRAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card" id="defcon-intruder-card" style="display: none; border-color: rgba(244, 63, 94, 0.7); background: rgba(244, 63, 94, 0.05);">
+        <div class="card-head">
+          <h2 style="color: var(--rose);">🚨 REGISTRO DE INTRUSO (DEFCON-1)</h2>
+          <span class="meta" id="defcon-time" style="color: var(--rose);">REGISTRADO</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">Fotograma silencioso asegurado en RAM al disparar el modo pánico:</p>
+        <div class="media-box">
+          <img id="defcon-img" src="/api/last_defcon_photo" alt="Intruso">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SEGURIDAD & DEFCON-1 -->
+    <div id="tab-security" class="tab-pane">
+      <div class="glass-card" style="border-color: rgba(244, 63, 94, 0.7); background: rgba(244, 63, 94, 0.06);">
+        <div class="card-head">
+          <h2 style="color: var(--rose);">PROTOCOLO DEFCON-1 // ANTI-INTRUSOS</h2>
+          <span class="meta" style="color: var(--rose); font-weight: 800;">INSTANTÁNEO</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px;">
+          Dispara el bloqueo de pánico: toma una <strong>foto silenciosa del intruso</strong> en RAM, silencia el hardware y <strong>bloquea Windows en 1 milisegundo</strong>.
+        </p>
+        <button class="action-button btn-panic-glow" style="width: 100%; text-align: center; align-items: center; padding: 14px;" onclick="triggerDefconLock()">
+          <span style="font-size: 13px; letter-spacing: 1px; font-weight: 900;">🚨 ACTIVAR BLOQUEO DEFCON 1</span>
+          <span class="btn-sub" style="color: #fca5a5;">Foto Silenciosa + Bloqueo Forzoso</span>
+        </button>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>GESTIÓN DE SESIÓN Y ENERGÍA</h2>
+          <span class="meta" style="color: var(--rose);">CONTROL REMOTO</span>
+        </div>
+        <div class="btn-row-2">
+          <button class="action-button btn-cyan" onclick="execAction('/api/power/lock', 'Bloqueando sesión...')">
+            <span>BLOQUEAR SESIÓN</span>
+            <span class="btn-sub">LockWorkStation</span>
+          </button>
+          <button class="action-button btn-amber" onclick="execAction('/api/power/sleep', 'Suspendiendo PC...')">
+            <span>MODO SUSPENSIÓN</span>
+            <span class="btn-sub">Reposo S3</span>
+          </button>
+        </div>
+        <div class="btn-row-2">
+          <button class="action-button btn-rose" onclick="confirmModal('APAGAR SISTEMA', '¿Confirmas que deseas apagar el equipo remotamente?', () => execAction('/api/power/shutdown', 'Apagando en 10s...'))">
+            <span>APAGAR SISTEMA</span>
+            <span class="btn-sub">Temporizador 10s</span>
+          </button>
+          <button class="action-button" onclick="confirmModal('REINICIAR SISTEMA', '¿Confirmas que deseas reiniciar el equipo remotamente?', () => execAction('/api/power/reboot', 'Reiniciando equipo...'))">
+            <span>REINICIAR SISTEMA</span>
+            <span class="btn-sub">Reinicio Seguro 10s</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>PANTALLA, AUDIO Y ALARMAS</h2>
+        </div>
+        <div class="btn-row-2">
+          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_screen', 'Encendiendo pantalla...')">
+            <span>DESPERTAR PANTALLA</span>
+            <span class="btn-sub">Encender Monitor / DWM</span>
+          </button>
+          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_pc', 'Enviando paquete WoL...')">
+            <span>DESPERTAR PC (WoL)</span>
+            <span class="btn-sub">Magic Packet Broadcast</span>
+          </button>
+        </div>
+        <div class="btn-row-3" style="margin-top: 4px;">
+          <button class="action-button" onclick="execAction('/api/power/mute', 'Alternando audio...')">
+            <span>SILENCIAR</span>
+            <span class="btn-sub">Audio Mute</span>
+          </button>
+          <button class="action-button" onclick="execAction('/api/power/volume?level=50', 'Fijando volumen al 50%...')">
+            <span>VOL 50%</span>
+            <span class="btn-sub">Nivel Medio</span>
+          </button>
+          <button class="action-button" onclick="execAction('/api/power/cancel', 'Cancelando apagado/reinicio...')">
+            <span>CANCELAR</span>
+            <span class="btn-sub">Abortar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PROCESOS -->
+    <div id="tab-processes" class="tab-pane">
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>PROCESOS ACTIVOS (TOP MEMORIA)</h2>
+          <button style="background: none; border: none; color: var(--cyan); font-size: 10px; font-weight: 800; cursor: pointer;" onclick="loadProcesses()">REFRESCAR</button>
+        </div>
+        <div id="processes-list">
+          <p style="font-size: 11px; color: var(--text-muted); padding: 10px 0;">Cargando procesos...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: AJUSTES & NOTIFICADORES -->
+    <div id="tab-config" class="tab-pane">
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>CANALES DE NOTIFICACIÓN</h2>
+          <span class="meta" style="color: var(--cyan);">CONFIGURACIÓN</span>
+        </div>
+
+        <!-- Discord -->
+        <div style="background: var(--card-inner); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+          <div class="form-switch">
+            <span style="font-weight: 800; font-size: 11px; color: #fff;">DISCORD (WEBHOOK)</span>
+            <input type="checkbox" id="cfg-discord-enabled" {% if config.DISCORD_ENABLED %}checked{% endif %}>
+          </div>
+          <div class="form-group" style="margin-top: 8px;">
+            <label>Webhook URL</label>
+            <input type="text" class="form-input" id="cfg-discord-url" value="{{ config.DISCORD_WEBHOOK_URL }}" placeholder="https://discord.com/api/webhooks/...">
+          </div>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('discord')">🔔 Probar Discord</button>
+        </div>
+
+        <!-- Telegram -->
+        <div style="background: var(--card-inner); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+          <div class="form-switch">
+            <span style="font-weight: 800; font-size: 11px; color: #fff;">TELEGRAM (BOT)</span>
+            <input type="checkbox" id="cfg-telegram-enabled" {% if config.TELEGRAM_ENABLED %}checked{% endif %}>
+          </div>
+          <div class="form-group" style="margin-top: 8px;">
+            <label>Bot Token</label>
+            <input type="text" class="form-input" id="cfg-telegram-token" value="{{ config.TELEGRAM_BOT_TOKEN }}" placeholder="123456789:ABCdef...">
+          </div>
+          <div class="form-group">
+            <label>Chat ID</label>
+            <input type="text" class="form-input" id="cfg-telegram-chat" value="{{ config.TELEGRAM_CHAT_ID }}" placeholder="123456789">
+          </div>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('telegram')">🔔 Probar Telegram</button>
+        </div>
+
+        <!-- WhatsApp -->
+        <div style="background: var(--card-inner); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+          <div class="form-switch">
+            <span style="font-weight: 800; font-size: 11px; color: #fff;">WHATSAPP (CALLMEBOT / WEBHOOK)</span>
+            <input type="checkbox" id="cfg-whatsapp-enabled" {% if config.WHATSAPP_ENABLED %}checked{% endif %}>
+          </div>
+          <div class="form-group" style="margin-top: 8px;">
+            <label>Teléfono (con prefijo +34...)</label>
+            <input type="text" class="form-input" id="cfg-whatsapp-phone" value="{{ config.WHATSAPP_PHONE }}" placeholder="+34600000000">
+          </div>
+          <div class="form-group">
+            <label>CallMeBot API Key</label>
+            <input type="text" class="form-input" id="cfg-whatsapp-apikey" value="{{ config.WHATSAPP_API_KEY }}" placeholder="123456">
+          </div>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('whatsapp')">🔔 Probar WhatsApp</button>
+        </div>
+
+        <button class="action-button btn-emerald" style="width: 100%; text-align: center; align-items: center; padding: 12px; margin-top: 6px;" onclick="saveConfigSettings()">
+          <span>💾 GUARDAR AJUSTES</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Global de Confirmación -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal-card">
+      <div class="modal-title" id="modal-title">CONFIRMACIÓN DE SEGURIDAD</div>
+      <div class="modal-desc" id="modal-msg">¿Deseas ejecutar esta acción remota?</div>
+      <div class="modal-actions">
+        <button class="btn-modal-confirm" id="modal-btn-ok">EJECUTAR</button>
+        <button class="btn-modal-cancel" onclick="closeConfirmModal()">CANCELAR</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-box"></div>
+
+  <script>
+    let activeModalCallback = null;
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      
+      const btn = event ? event.currentTarget : document.querySelector(`.tab-btn[onclick*="${tabId}"]`);
+      if (btn) btn.classList.add('active');
+      const pane = document.getElementById('tab-' + tabId);
+      if (pane) pane.classList.add('active');
+
+      if (tabId === 'processes') {
+        loadProcesses();
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-box');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2400);
+    }
+
+    async function execAction(url, pendingMsg) {
+      showToast(pendingMsg);
+      try {
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+        showToast(data.msg || 'Ejecutado con exito');
+      } catch(e) {
+        showToast('Error de comunicacion con el servidor');
+      }
+    }
+
+    function confirmModal(title, msg, callback) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-msg').innerText = msg;
+      activeModalCallback = callback;
+      document.getElementById('confirm-modal').style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal').style.display = 'none';
+      activeModalCallback = null;
+    }
+
+    document.getElementById('modal-btn-ok').addEventListener('click', () => {
+      if (activeModalCallback) {
+        const fn = activeModalCallback;
+        closeConfirmModal();
+        fn();
+      }
+    });
+
+    // Telemetría en tiempo real
+    async function updateStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const d = await res.json();
+        
+        document.getElementById('val-cpu').innerText = d.cpu_pct + '%';
+        document.getElementById('bar-cpu').style.width = d.cpu_pct + '%';
+        document.getElementById('val-ram').innerText = `${d.ram.used_gb}/${d.ram.total_gb} GB`;
+        document.getElementById('bar-ram').style.width = d.ram.pct + '%';
+        document.getElementById('live-uptime').innerText = 'Uptime: ' + d.uptime.uptime_str;
+        document.getElementById('live-active-win').innerText = d.active_window;
+        document.getElementById('live-game-mode').innerText = d.is_optimized ? `ACTIVO (${d.workload_name.toUpperCase()})` : '0% CARGA RESIDUAL';
+      } catch(e) {}
+    }
+    setInterval(updateStats, 2000);
+
+    // Media Viewer
+    function loadMedia(url, label) {
+      showToast('Obteniendo ' + label + '...');
+      const box = document.getElementById('media-container');
+      const img = document.getElementById('media-img');
+      const vid = document.getElementById('media-video');
+      const dl = document.getElementById('media-dl');
+
+      vid.pause();
+      vid.style.display = 'none';
+      img.style.display = 'block';
+      box.style.display = 'block';
+
+      const fullUrl = url + '?t=' + Date.now();
+      img.src = fullUrl;
+      dl.href = fullUrl;
+      dl.download = 'captura_' + Date.now() + '.jpg';
+      document.getElementById('media-label').innerText = label;
+    }
+
+    function closeMediaViewer() {
+      document.getElementById('media-container').style.display = 'none';
+      document.getElementById('media-img').src = '';
+      const v = document.getElementById('media-video');
+      v.pause(); v.src = '';
+      fetch('/api/clear_temp_clip', { method: 'POST' }).catch(() => {});
+    }
+
+    async function generateForensicClip() {
+      showToast('Compilando video forense desde memoria RAM...');
+      const box = document.getElementById('media-container');
+      const img = document.getElementById('media-img');
+      const vid = document.getElementById('media-video');
+      const dl = document.getElementById('media-dl');
+
+      try {
+        const res = await fetch('/api/generate_clip', { method: 'POST' });
+        const d = await res.json();
+        if (d.error) {
+          showToast(d.error);
+          return;
+        }
+        img.style.display = 'none';
+        vid.style.display = 'block';
+        box.style.display = 'block';
+
+        vid.src = d.url + '?t=' + Date.now();
+        dl.href = d.url;
+        dl.download = d.filename;
+        document.getElementById('media-label').innerText = 'Video Forense (' + d.duration + ')';
+        vid.play();
+        showToast('Video listo');
+      } catch(e) {
+        showToast('Error al compilar video');
+      }
+    }
+
+    function triggerDefconLock() {
+      confirmModal('ACTIVAR MODO PANICO DEFCON-1', '¿Confirmas el bloqueo forzoso inmediato de la estacion y captura silenciosa de evidencia?', async () => {
+        showToast('DISPARANDO BLOQUEO DEFCON-1...');
+        try {
+          const res = await fetch('/api/defcon/panic', { method: 'POST' });
+          const d = await res.json();
+          showToast(d.msg || 'DEFCON-1 EJECUTADO');
+          document.getElementById('defcon-intruder-card').style.display = 'block';
+          document.getElementById('defcon-img').src = '/api/last_defcon_photo?t=' + Date.now();
+          switchTab('surveillance');
+        } catch(e) {
+          showToast('Error al ejecutar DEFCON-1');
+        }
+      });
+    }
+
+    async function loadProcesses() {
+      const container = document.getElementById('processes-list');
+      container.innerHTML = '<p style="font-size: 11px; color: var(--text-muted);">Cargando procesos...</p>';
+      try {
+        const res = await fetch('/api/processes');
+        const procs = await res.json();
+        if (!procs || procs.length === 0) {
+          container.innerHTML = '<p style="font-size: 11px; color: var(--text-muted);">Sin procesos pesados en ejecucion.</p>';
+          return;
+        }
+        let html = '';
+        procs.forEach(p => {
+          html += `
+            <div class="proc-row">
+              <div>
+                <div class="proc-name">${p.name}</div>
+                <div class="proc-pid">PID: ${p.pid}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 10px; font-weight: 700; color: var(--cyan); background: rgba(56,189,248,0.1); padding: 3px 6px; border-radius: 4px;">${p.mem_mb} MB</span>
+                <button class="proc-kill-btn" onclick="killProc(${p.pid}, '${p.name}')">CERRAR</button>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch(e) {
+        container.innerHTML = '<p style="font-size: 11px; color: var(--rose);">Error al listar procesos.</p>';
+      }
+    }
+
+    function killProc(pid, name) {
+      confirmModal('FINALIZAR PROCESO', `¿Deseas cerrar la tarea ${name} (PID: ${pid})?`, () => {
+        execAction('/api/processes/kill?pid=' + pid, 'Cerrando ' + name + '...');
+        setTimeout(loadProcesses, 1000);
+      });
+    }
+
+    async function testChannel(channel) {
+      showToast('Enviando prueba a ' + channel + '...');
+      try {
+        const res = await fetch('/api/test_notification?channel=' + channel, { method: 'POST' });
+        const d = await res.json();
+        showToast(d.msg);
+      } catch(e) {
+        showToast('Error al enviar prueba');
+      }
+    }
+
+    async function saveConfigSettings() {
+      showToast('Guardando ajustes...');
+      const payload = {
+        DISCORD_ENABLED: document.getElementById('cfg-discord-enabled').checked,
+        DISCORD_WEBHOOK_URL: document.getElementById('cfg-discord-url').value.trim(),
+        TELEGRAM_ENABLED: document.getElementById('cfg-telegram-enabled').checked,
+        TELEGRAM_BOT_TOKEN: document.getElementById('cfg-telegram-token').value.trim(),
+        TELEGRAM_CHAT_ID: document.getElementById('cfg-telegram-chat').value.trim(),
+        WHATSAPP_ENABLED: document.getElementById('cfg-whatsapp-enabled').checked,
+        WHATSAPP_PHONE: document.getElementById('cfg-whatsapp-phone').value.trim(),
+        WHATSAPP_API_KEY: document.getElementById('cfg-whatsapp-apikey').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const d = await res.json();
+        showToast(d.msg || 'Ajustes guardados con exito');
+      } catch(e) {
+        showToast('Error al guardar ajustes');
+      }
+    }
+  </script>
+</body>
+</html>
