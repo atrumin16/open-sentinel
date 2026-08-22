@@ -70,20 +70,23 @@
 
 ---
 
-## ⚡ Quick Start (2 Clics)
+## ⚡ Quick Start (Instalación en 2 Clics)
 
-### 1. Clone & Configure
+### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/atrumin16/open-sentinel.git
 cd open-sentinel
-copy config.example.json config.json
 ```
 
-### 2. Run the 2-Click Installer
-Double-click **`scripts/install.bat`** on your machine:
-* Automatically verifies Python dependencies (`requirements.txt`).
-* Registers a single, clean, hidden Windows Startup shortcut.
-* Starts OpenSentinel in the background and sends a boot confirmation ping.
+### 2. Ejecutar el Instalador Interactivo
+Haz doble clic en **`scripts/install.bat`** (o ejecuta `python main.py --setup`):
+* Instala automáticamente las dependencias necesarias (`requirements.txt`).
+* Inicia un **asistente interactivo en consola** que detecta tu hardware e IP automáticamente y te guía para configurar tu nombre de servidor, Webhook de Discord, Telegram o WhatsApp.
+* Permite enviar un mensaje de prueba en tiempo real para verificar la conexión.
+* Registra el inicio automático silencioso en segundo plano de Windows (0% CPU residual).
+* Inicia el servidor OpenSentinel y abre el panel de control.
+
+Para reconfigurar en cualquier momento, ejecuta `scripts/setup.bat` o `python main.py --setup`.
 
 ---
 

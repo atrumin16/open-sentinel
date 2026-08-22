@@ -96,3 +96,15 @@ def get_network_summary(port=8888, wait_tailscale=False) -> dict:
         "url_local": f"http://{lan_ip}:{port}",
         "url_loopback": f"http://127.0.0.1:{port}"
     }
+
+def is_trusted_ip(ip: str) -> bool:
+    """Valida si una dirección IP pertenece a la red local privada o a la malla P2P de Tailscale."""
+    if not ip:
+        return False
+    return (
+        ip.startswith("100.") or
+        ip.startswith("192.168.") or
+        ip.startswith("10.") or
+        ip.startswith("172.") or
+        ip in ("127.0.0.1", "::1", "localhost")
+    )

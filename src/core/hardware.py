@@ -93,13 +93,35 @@ def get_active_window_title() -> str:
     except Exception:
         return "Escritorio"
 
+def get_current_user() -> str:
+    """Obtiene el nombre de usuario de la sesión interactiva activa de forma 100% dinámica."""
+    try:
+        import getpass
+        u = getpass.getuser()
+        if u and not u.endswith("$") and u.upper() not in ("SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"):
+            return u
+    except Exception:
+        pass
+
+    user = os.getenv("USERNAME") or os.getenv("USER")
+    if user and not user.endswith("$") and user.upper() not in ("SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"):
+        return user
+
+    try:
+        out = subprocess.check_output("wmic computersystem get username", shell=True, text=True, stderr=subprocess.DEVNULL)
+        lines = [l.strip() for l in out.splitlines() if l.strip() and "UserName" not in l]
+        if lines:
+            return lines[0].split("\\")[-1]
+    except Exception:
+        pass
+
+    return "Usuario"
+
 def get_full_hardware_summary() -> dict:
     """Genera un resumen consolidado del hardware del equipo."""
     ram = get_ram_stats()
     uptime = get_system_uptime()
-    user = os.getenv("USERNAME", "Alberto")
-    if not user or user.endswith("$") or user.upper() in ("SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"):
-        user = "Alberto"
+    user = get_current_user()
 
     return {
         "hostname": platform.node(),

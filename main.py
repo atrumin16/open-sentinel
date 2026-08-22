@@ -17,6 +17,7 @@ import threading
 from src.config import load_config
 from src.core.surveillance import start_surveillance_threads
 from src.core.network import get_network_summary
+from src.core.wizard import run_interactive_wizard
 from src.notifiers.dispatcher import dispatch_boot_alert, send_test_notification
 from src.web.app import create_app, check_single_instance
 
@@ -45,11 +46,17 @@ def print_banner(cfg: dict, net: dict):
 
 def main():
     parser = argparse.ArgumentParser(description="OpenSentinel Server & Alerter")
+    parser.add_argument("--setup", action="store_true", help="Run interactive configuration wizard")
     parser.add_argument("--alert-only", action="store_true", help="Send boot alert and exit")
     parser.add_argument("--force-alert", action="store_true", help="Force send boot alert bypassing anti-spam")
     parser.add_argument("--test-notifiers", action="store_true", help="Send test pings to all active notification channels")
     parser.add_argument("--port", type=int, help="Override server port")
     args = parser.parse_args()
+
+    # Modo Asistente Interactivo
+    if args.setup:
+        run_interactive_wizard()
+        return
 
     cfg = load_config()
     if args.port:

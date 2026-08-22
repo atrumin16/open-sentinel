@@ -32,12 +32,18 @@ if %ERRORLEVEL% NEQ 0 (
 echo [OK] Dependencias listas.
 echo.
 
-:: 2. Crear config.json si no existe
+:: 2. Asistente interactivo de configuracion
 if not exist "config.json" (
-    echo [2/4] Creando plantilla de configuracion config.json...
-    copy "config.example.json" "config.json" >nul
+    echo [2/4] Ejecutando asistente interactivo de configuracion...
+    python main.py --setup
 ) else (
-    echo [2/4] Archivo config.json existente verificado.
+    echo [2/4] Archivo config.json detectado.
+    set /p RUN_WIZ="Deseas volver a configurar los canales y opciones ahora? (s/N): "
+    if /i "!RUN_WIZ!"=="s" (
+        python main.py --setup
+    ) else (
+        echo [OK] Manteniendo configuracion actual.
+    )
 )
 echo.
 
