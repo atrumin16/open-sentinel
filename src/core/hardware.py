@@ -97,9 +97,13 @@ def get_full_hardware_summary() -> dict:
     """Genera un resumen consolidado del hardware del equipo."""
     ram = get_ram_stats()
     uptime = get_system_uptime()
+    user = os.getenv("USERNAME", "Alberto")
+    if not user or user.endswith("$") or user.upper() in ("SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"):
+        user = "Alberto"
+
     return {
         "hostname": platform.node(),
-        "user": os.getenv("USERNAME", "Usuario"),
+        "user": user,
         "os": f"{platform.system()} {platform.release()} ({platform.version()})",
         "cpu": get_cpu_name(),
         "cpu_cores": psutil.cpu_count(logical=False),

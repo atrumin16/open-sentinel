@@ -25,15 +25,22 @@ class DiscordNotifier(BaseNotifier):
         iso_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        url_remote = net.get("url_remote") or "No disponible (Tailscale inactivo)"
+        url_remote = net.get("url_remote", "")
         url_local = net.get("url_local") or "http://127.0.0.1:8888"
+
+        if url_remote:
+            remote_line = f"• 🚀 **Acceso Remoto (Tailscale P2P):** [Abrir Panel Remoto]({url_remote})"
+        else:
+            remote_line = "• 🚀 **Acceso Remoto (Tailscale P2P):** *No disponible en el arranque*"
+
+        local_line = f"• 🏠 **Acceso Local (Red Doméstica LAN):** [Abrir Panel Local]({url_local})"
 
         embed = {
             "title": f"🟢 SISTEMA EN LÍNEA // {hw['hostname'].upper()}",
             "description": (
                 f"**CENTRO DE CONTROL REMOTO DISPONIBLE:**\n"
-                f"• 🚀 **Acceso Remoto (Tailscale P2P):** [Abrir Panel Remoto]({url_remote})\n"
-                f"• 🏠 **Acceso Local (Red Domestica LAN):** [Abrir Panel Local]({url_local})"
+                f"{remote_line}\n"
+                f"{local_line}"
             ),
             "color": 0x38BDF8,  # Azul Cyan
             "timestamp": iso_timestamp,

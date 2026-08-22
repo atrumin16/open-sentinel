@@ -11,23 +11,30 @@ import subprocess
 import psutil
 import requests
 
-def get_tailscale_ip() -> str:
+def get_tailscale_ip(retries: int = 1, delay: float = 2.0) -> str:
     """Obtiene la dirección IPv4 de la interfaz Tailscale P2P si está activa."""
-    try:
-        ts_cmd = shutil.which("tailscale") or r"C:\Program Files\Tailscale\tailscale.exe"
-        if os.path.exists(ts_cmd):
-            out = subprocess.check_output([ts_cmd, "ip", "-4"], text=True, stderr=subprocess.DEVNULL, timeout=2).strip()
-            if out:
-                return out
-    except Exception:
-        pass
+    import time
+    for _ in range(max(1, retries)):
+        try:
+            ts_cmd = shutil.which("tailscale") or r"C:\Program Files\Tailscale\tailscale.exe"
+            if os.path.exists(ts_cmd):
+                out = subprocess.check_output([ts_cmd, "ip", "-4"], text=True, stderr=subprocess.DEVNULL, timeout=3).strip()
+                if out and not out.startswith("169.254") and out.startswith("100."):
+                    return out
+        except Exception:
+            pass
 
-    # Búsqueda por adaptador de red
-    for iface, addrs in psutil.net_if_addrs().items():
-        if "tailscale" in iface.lower():
-            for addr in addrs:
-                if addr.family == socket.AF_INET:
-                    return addr.address
+        # Búsqueda por adaptador de red
+        try:
+            for iface, addrs in psutil.net_if_addrs().items():
+                if "tailscale" in iface.lower():
+                    for addr in addrs:
+                        if addr.family == socket.AF_INET and not addr.address.startswith("169.254"):
+                            return addr.address
+        except Exception:
+            pass
+        if retries > 1:
+            time.sleep(delay)
     return ""
 
 def get_local_lan_ip() -> str:
@@ -73,9 +80,9 @@ def send_wol_packet() -> bool:
     except Exception:
         return False
 
-def get_network_summary(port=8888) -> dict:
+def get_network_summary(port=8888, wait_tailscale=False) -> dict:
     """Genera un resumen completo de enlaces de red y URLs de acceso."""
-    ts_ip = get_tailscale_ip()
+    ts_ip = get_tailscale_ip(retries=18, delay=2.0) if wait_tailscale else get_tailscale_ip()
     lan_ip = get_local_lan_ip()
     pub = get_public_ip_info()
 

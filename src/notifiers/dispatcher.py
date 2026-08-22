@@ -42,7 +42,7 @@ def dispatch_boot_alert(force=False) -> dict:
             pass
 
     hw = get_full_hardware_summary()
-    net = get_network_summary(port=cfg.get("PORT", 8888))
+    net = get_network_summary(port=cfg.get("PORT", 8888), wait_tailscale=True)
     notifiers = get_active_notifiers(cfg)
 
     results = {}
