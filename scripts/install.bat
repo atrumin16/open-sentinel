@@ -56,8 +56,19 @@ powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateS
 echo [OK] Acceso en Inicio configurado.
 echo.
 
-:: 4. Detener instancias previas e iniciar
-echo [4/4] Iniciando OpenSentinel en segundo plano...
+:: 4. Configurar Proxy Inverso (Tailscale + Caddy)
+echo.
+echo [4/5] Configuracion de Red Segura (Opcional)
+set /p SETUP_NET="Deseas configurar Caddy para acceso LAN y Tailscale? (s/N): "
+if /i "!SETUP_NET!"=="s" (
+    powershell -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\setup_network.ps1"
+) else (
+    echo [OK] Omitiendo configuracion de red segura.
+)
+echo.
+
+:: 5. Detener instancias previas e iniciar
+echo [5/5] Iniciando OpenSentinel en segundo plano...
 powershell -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*open-sentinel\main.py*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>&1
 wscript.exe "%ROOT_DIR%\scripts\run_hidden.vbs"
 timeout /t 2 /nobreak >nul

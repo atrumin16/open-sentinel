@@ -83,10 +83,12 @@ Haz doble clic en **`scripts/install.bat`** (o ejecuta `python main.py --setup`)
 * Instala automáticamente las dependencias necesarias (`requirements.txt`).
 * Inicia un **asistente interactivo en consola** que detecta tu hardware e IP automáticamente y te guía para configurar tu nombre de servidor, Webhook de Discord, Telegram o WhatsApp.
 * Permite enviar un mensaje de prueba en tiempo real para verificar la conexión.
+* **NUEVO:** Ofrece la configuración automática de una Red Segura (Proxy Inverso Caddy + Tailscale) para acceder a través de tu dominio personalizado (ej: `dash.midominio.com` o `alertas.local`).
 * Registra el inicio automático silencioso en segundo plano de Windows (0% CPU residual).
 * Inicia el servidor OpenSentinel y abre el panel de control.
 
 Para reconfigurar en cualquier momento, ejecuta `scripts/setup.bat` o `python main.py --setup`.
+Para configurar o actualizar tu Proxy Inverso (Caddy/Tailscale) manualmente, ejecuta `scripts/setup_network.ps1`.
 
 ---
 
