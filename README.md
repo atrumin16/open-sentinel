@@ -175,4 +175,4 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
 
-Developed with ❤️ by [Alberto](https://github.com/atrumin16) and OpenSentinel Contributors.
+Developed by [Alberto](https://github.com/atrumin16) and OpenSentinel Contributors.
