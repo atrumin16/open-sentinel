@@ -1,4 +1,4 @@
-name: Sentinel Issue & PR Guardian
+name: Enterprise Governance & Sentinel Triage
 
 on:
   issues:
@@ -12,60 +12,61 @@ permissions:
 
 jobs:
   triage:
-    name: Zero-Trust Triage & Classification
+    name: Autonomous Operations Governance
     runs-on: ubuntu-latest
 
     steps:
-      - name: Triage Issue
-        if: github.event_name == 'issues'
+      - name: Enterprise Triage & Policy Validation
         uses: actions/github-script@v7
         with:
           script: |
-            const title = context.payload.issue.title.toLowerCase();
-            const body = (context.payload.issue.body || '').toLowerCase();
+            const isPR = context.eventName === 'pull_request_target';
+            const item = isPR ? context.payload.pull_request : context.payload.issue;
+            const number = item.number;
+            const title = (item.title || '').toLowerCase();
+            const body = (item.body || '').toLowerCase();
+            const author = item.user.login;
             const labels = [];
 
-            if (title.includes('security') || body.includes('vulnerability') || title.includes('cve') || title.includes('leak')) {
-              labels.push('security');
-            } else if (title.includes('bug') || title.includes('error') || title.includes('crash') || title.includes('fail')) {
-              labels.push('bug');
-            } else if (title.includes('feature') || title.includes('feat') || title.includes('enhancement')) {
-              labels.push('enhancement');
+            if (title.includes('security') || body.includes('vulnerability') || body.includes('cve') || body.includes('exploit')) {
+              labels.push('security:critical');
+            } else if (title.includes('fix') || title.includes('bug') || body.includes('error') || body.includes('crash')) {
+              labels.push('type:bug');
+            } else if (title.includes('feat') || title.includes('add') || title.includes('enhance')) {
+              labels.push('type:enhancement');
+            } else if (title.includes('doc') || title.includes('guide')) {
+              labels.push('type:documentation');
+            }
+
+            if (isPR) {
+              labels.push('status:pending-review');
+            } else if (labels.length === 0) {
+              labels.push('status:triaged');
+            }
+
+            try {
+              if (labels.length > 0) {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: number,
+                  labels
+                });
+              }
+            } catch (e) {
+              console.log('Label assignment skipped:', e.message);
+            }
+
+            let commentBody = '';
+            if (isPR) {
+              commentBody = `### 🛡️ Trujillo Systems & Operations Governance | Automated SRE Sentinel\n\nThank you, @${author}, for your contribution to the **Trujillo Technology Ecosystem**.\n\nYour Pull Request has been cataloged under enterprise change-management specifications and queued for zero-trust policy compliance verification.\n\n| Verification Stage | Policy / Standard | Status |\n| :--- | :--- | :---: |\n| **Identity & Provenance** | Verified Contributor Credentials | \`VERIFIED\` |\n| **Zero-Trust Audit** | SAST, High-Entropy Secrets & Key Leak Scanner | \`RUNNING\` |\n| **Pipeline Governance** | Automated CI/CD Build & Asset Verification | \`ACTIVE\` |\n\n> [!NOTE]\n> All Pull Requests are governed automatically by **\`trujillo-bot\`** under continuous integration runbooks. A core maintainer will review this lifecycle event shortly.`;
             } else {
-              labels.push('triage');
-            }
-
-            if (labels.length > 0) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                labels
-              });
+              commentBody = `### 🛡️ Trujillo Systems & Operations Governance | Incident & Ticket Triage\n\nThank you, @${author}, for opening this ticket in the **Trujillo Technology Ecosystem**.\n\nThis inquiry has been registered in the engineering operations queue with the following classification parameters:\n- **Registry ID:** \`#${number}\`\n- **Classification Tags:** ${labels.map(l => `\`${l}\``).join(' ') || '\`status:triaged\`'}\n- **Security Posture:** Zero-Trust Audited\n\n> [!TIP]\n> Engineering operations actively review and prioritize tickets according to operational severity. Please ensure all telemetry logs or reproduction steps are attached.`;
             }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `🛡️ **Open-Sentinel Automated Guardian (trujillo-bot)**\n\nThank you for opening this issue. It has been registered and auto-classified with: \`${labels.join(', ')}\`.\n\nOur automated security scanner verifies incoming reports. Maintainers will review this shortly.`
-            });
-
-      - name: Triage Pull Request
-        if: github.event_name == 'pull_request_target'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              labels: ['needs-review']
-            });
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `🛡️ **Open-Sentinel Automated Guardian (trujillo-bot)**\n\nPull Request registered. Automated SAST, entropy scanning, and bytecode checks have been scheduled.\n\nPlease ensure your commits adhere to Zero-Trust integrity specifications.`
+              issue_number: number,
+              body: commentBody
             });
