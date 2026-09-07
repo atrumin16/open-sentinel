@@ -1,0 +1,59 @@
+name: Autonomous Repository Organizer
+
+on:
+  pull_request_target:
+    types: [ opened, synchronize ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  organize:
+    name: Area & Component Auto-Labeling
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Inspect Modified Files & Assign Areas
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                per_page: 100
+              }
+            );
+
+            const labelsToAdd = new Set();
+
+            for (const file of files) {
+              const filename = file.filename;
+              if (filename.startsWith('src/') || filename === 'main.py') {
+                labelsToAdd.add('area:core-engine');
+              }
+              if (filename.endsWith('.md') || filename.startsWith('docs/')) {
+                labelsToAdd.add('documentation');
+              }
+              if (filename.startsWith('.github/') || filename.startsWith('scripts/')) {
+                labelsToAdd.add('area:devops');
+              }
+            }
+
+            if (labelsToAdd.size > 0) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  labels: Array.from(labelsToAdd)
+                });
+                console.log('Assigned area labels:', Array.from(labelsToAdd));
+              } catch (e) {
+                console.log('Skipped label assignment:', e.message);
+              }
+            }

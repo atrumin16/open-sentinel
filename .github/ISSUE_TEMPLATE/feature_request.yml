@@ -1,0 +1,35 @@
+name: "🚀 Architecture Enhancement / RFC"
+description: Propose a new surveillance capability, notifier channel, or forensic module.
+title: "[FEATURE]: "
+labels: ["type:enhancement", "status:needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🛡️ Open-Sentinel Architecture Proposal
+        Submit proposals for expanding defensive telemetry, integrations, or operational capabilities.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Capability Gap / Operational Problem
+      description: Describe the current limitation or operational vector you are addressing.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Architecture & Specification
+      description: Outline the architectural mechanism, protocol, or design pattern.
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Ecosystem Impact
+      options:
+        - Forensic Core Subsystem
+        - Notification & Alert Router
+        - Web Console & Telemetry UI
+        - Zero-Trust CI/CD Automation
+    validations:
+      required: true

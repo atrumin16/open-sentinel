@@ -1,0 +1,42 @@
+name: "🐛 Bug Report / Incident Vector"
+description: File an operational incident, software defect, or runtime anomaly.
+title: "[BUG]: "
+labels: ["type:bug", "status:needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🛡️ Open-Sentinel Incident Reporting Specification
+        Please provide reproducible technical telemetry to expedite diagnostic resolution.
+  - type: input
+    id: environment
+    attributes:
+      label: Operating Environment & Platform
+      description: What OS and architecture is Open-Sentinel running on? (e.g. Windows 11 23H2, Ubuntu 24.04 LTS, Arch Linux)
+      placeholder: e.g. Windows 11 Pro 64-bit / Python 3.12
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Anomaly Description & Observed Behavior
+      description: A clear description of what the anomaly is and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Vector & Telemetry Steps
+      description: Exact steps to reproduce the issue.
+      placeholder: |
+        1. Configure config.json with Telegram notifier
+        2. Run python main.py --stealth
+        3. Trigger simulated intrusion
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Diagnostic Logs & Terminal Traces
+      description: Attach sanitized log output. Ensure no private tokens are included.
+      render: shell

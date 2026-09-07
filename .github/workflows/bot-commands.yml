@@ -1,0 +1,113 @@
+name: Interactive Sentinel Bot Dispatcher
+
+on:
+  issue_comment:
+    types: [ created ]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  command:
+    name: Process Slash Command
+    if: startsWith(github.event.comment.body, '/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute Interactive Command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body.trim();
+            const author = context.payload.comment.user.login;
+            const issueNumber = context.issue.number;
+            const isPR = !!context.payload.issue.pull_request;
+
+            // React to comment with rocket
+            try {
+              await github.rest.reactions.createForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                content: 'rocket'
+              });
+            } catch (e) {}
+
+            const parts = comment.split(/\s+/);
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            let reply = '';
+
+            switch (cmd) {
+              case '/ping':
+                reply = `🤖 **trujillo-bot [Online]**\n\n- SRE Sentinel Engine: \`ACTIVE\`\n- Telemetry Pipeline: \`HEALTHY\`\n- Respondent: @${author}`;
+                break;
+
+              case '/status':
+                reply = `### 🛡️ Trujillo Systems Telemetry Status\n\n| Subsystem | Metric / Mode | Status |\n| :--- | :--- | :---: |\n| **Core Engine** | Memory & Process Forensics | \`ONLINE\` |\n| **Zero-Trust SAST** | Bandit CWE Heuristics | \`ENFORCED\` |\n| **Secret Scanner** | High-Entropy Token Defense | \`ACTIVE\` |\n| **Dispatcher** | Multi-Channel Alert Router | \`READY\` |`;
+                break;
+
+              case '/label':
+                if (args.length === 0) {
+                  reply = `⚠️ **Usage:** \`/label <label-name>\`\n*Example:* \`/label area:core-engine\``;
+                } else {
+                  const labelName = args.join(' ');
+                  try {
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: issueNumber,
+                      labels: [labelName]
+                    });
+                    reply = `✅ Label \`${labelName}\` assigned successfully.`;
+                  } catch (err) {
+                    reply = `❌ Failed to assign label \`${labelName}\`: ${err.message}`;
+                  }
+                }
+                break;
+
+              case '/close':
+                const reason = args.join(' ') || 'Completed by maintainer request';
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  body: `🔒 **trujillo-bot Audit:** Ticket closed by @${author}.\n*Reason:* ${reason}`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: 'closed'
+                });
+                return;
+
+              case '/reopen':
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: 'open'
+                });
+                reply = `🔓 Ticket reopened by @${author}. Active telemetry restored.`;
+                break;
+
+              case '/help':
+                reply = `### 🤖 trujillo-bot Command Registry\n\nAvailable interactive slash commands:\n- \`/ping\` — Verify bot connectivity and operational health\n- \`/status\` — Display zero-trust telemetry diagnostic matrix\n- \`/label <name>\` — Apply classification label to this ticket\n- \`/close [reason]\` — Close ticket with zero-trust audit log\n- \`/reopen\` — Reopen previously resolved ticket\n- \`/help\` — Display this command registry`;
+                break;
+
+              default:
+                reply = `⚠️ Unknown command \`${cmd}\`. Type \`/help\` to inspect available commands.`;
+                break;
+            }
+
+            if (reply) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: reply
+              });
+            }
