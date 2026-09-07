@@ -1,25 +1,67 @@
 # Contributing to OpenSentinel
 
-Thank you for your interest in contributing to **OpenSentinel**!
+Thank you for your interest in contributing to **OpenSentinel**, the self-hosted defensive telemetry and forensics suite.
+
+---
 
 ## Code of Conduct
-Please be respectful, constructive, and collaborative in all interactions with the project and fellow contributors.
+Please maintain professional, constructive, and zero-trust engineering standards across all interactions and technical reviews.
 
-## How Can I Contribute?
-- **Reporting Bugs:** Submit a GitHub Issue detailing the steps to reproduce, OS version, and relevant logs.
-- **Suggesting Features:** Open an Issue with a clear explanation of the feature and use case.
-- **Pull Requests:** 
-  1. Fork the repo and create your branch from `main`.
-  2. Follow PEP 8 guidelines for Python code.
-  3. Ensure no private tokens, API keys, or machine-specific paths are committed.
-  4. Test your changes locally before opening a PR.
+---
 
 ## Development Setup
+
+Clone the repository and prepare your local virtual environment:
+
 ```bash
 git clone https://github.com/atrumin16/open-sentinel.git
 cd open-sentinel
 python -m venv venv
-venv\Scripts\activate
+
+# Windows PowerShell:
+venv\Scripts\Activate.ps1
+
+# Linux / macOS:
+source venv/bin/activate
+
 pip install -r requirements.txt
-python main.py
+pip install bandit flake8
 ```
+
+---
+
+## Pre-Commit Verification & Security Checklist
+
+Before opening a Pull Request, verify your changes against our Zero-Trust standards:
+
+### 1. Bytecode Compilation
+Ensure all modified Python modules compile cleanly with zero syntax warnings:
+```bash
+python -m py_compile main.py
+python -m py_compile src/**/*.py
+```
+
+### 2. Local SAST Security Audit
+Run Bandit to check for common Common Weakness Enumerations (CWE):
+```bash
+bandit -r src/ main.py -ll
+```
+
+### 3. Secret Leak Prevention
+- Never commit active API keys, Discord webhooks, Telegram bot tokens, or private `.pem` keys.
+- Store test credentials exclusively in `.env` (which is gitignored).
+
+---
+
+## Pull Request Guidelines
+
+1. Create a focused feature branch from `main`:
+   ```bash
+   git checkout -b feat/your-capability
+   ```
+2. Adhere to Conventional Commits (`feat:`, `fix:`, `sec:`, `docs:`, `ci:`).
+3. If pair programming or using AI-assisted tooling (e.g. Claude Code), include the official co-authorship trailer:
+   ```text
+   Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+   ```
+4. Open your Pull Request and ensure the automated Sentinel CI pipeline passes.
