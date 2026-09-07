@@ -1,0 +1,40 @@
+name: Release Governance & Distribution
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Package Verified Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generate Release Bundle & Checksums
+        run: |
+          VERSION=${GITHUB_REF_NAME:-v1.0.0}
+          echo "Packaging Open-Sentinel $VERSION"
+          mkdir -p dist
+          tar -czvf "dist/open-sentinel-${VERSION}.tar.gz" main.py src/ requirements.txt README.md LICENSE SECURITY.md
+          zip -r "dist/open-sentinel-${VERSION}.zip" main.py src/ requirements.txt README.md LICENSE SECURITY.md
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+          name: "Open-Sentinel Release ${{ github.ref_name }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
