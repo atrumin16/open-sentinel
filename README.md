@@ -1,4 +1,4 @@
-# 🛡️ OpenSentinel
+# OpenSentinel
 
 <div align="center">
 
@@ -6,22 +6,22 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6.svg?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![Co-Authored with Claude](https://img.shields.io/badge/Co--Authored%20with-Claude%20(Anthropic)-D97706.svg?style=flat-square&logo=anthropic&logoColor=white)](https://anthropic.com)
-[![Architecture: Zero-Cloud](https://img.shields.io/badge/Architecture-100%25%20Zero--Cloud-059669.svg?style=flat-square)](#-privacidad-y-protocolos-de-seguridad)
-[![Forensics: RAM Buffer](https://img.shields.io/badge/Forensics-0%20MB%20Disk%20Wear-3B82F6.svg?style=flat-square)](#-características-principales)
-[![Panic Lockdown](https://img.shields.io/badge/DEFCON--1-1ms%20Lockdown-EF4444.svg?style=flat-square)](#-características-principales)
+[![Architecture: Zero-Cloud](https://img.shields.io/badge/Architecture-100%25%20Zero--Cloud-059669.svg?style=flat-square)](#privacidad-y-protocolos-de-seguridad)
+[![Forensics: RAM Buffer](https://img.shields.io/badge/Forensics-0%20MB%20Disk%20Wear-3B82F6.svg?style=flat-square)](#características-principales)
+[![Panic Lockdown](https://img.shields.io/badge/DEFCON--1-1ms%20Lockdown-EF4444.svg?style=flat-square)](#características-principales)
 [![Discord Alerts](https://img.shields.io/badge/Alerts-Discord-5865F2.svg?style=flat-square&logo=discord&logoColor=white)](https://discord.com)
 [![Telegram Alerts](https://img.shields.io/badge/Alerts-Telegram-26A5E4.svg?style=flat-square&logo=telegram&logoColor=white)](https://telegram.org)
 [![WhatsApp Alerts](https://img.shields.io/badge/Alerts-WhatsApp-25D366.svg?style=flat-square&logo=whatsapp&logoColor=white)](https://whatsapp.com)
 
 **Lightweight, zero-cloud security sentinel, in-RAM forensic recorder, and remote PC telemetry console tailored for Windows workstations.**
 
-[Quick Start](#-quick-start-instalación-paso-a-paso) • [Guía de Canales](#-guía-de-configuración-de-canales) • [Características](#-características-principales) • [Arquitectura](#-arquitectura) • [API REST](#-referencia-de-api-rest) • [FAQ & Solución de Problemas](#-faq--solución-de-problemas)
+[Quick Start](#quick-start-instalación-paso-a-paso) · [Guía de Canales](#guía-de-configuración-de-canales) · [Características](#características-principales) · [Arquitectura](#arquitectura) · [API REST](#referencia-de-api-rest) · [FAQ](#faq--solución-de-problemas)
 
 </div>
 
 ---
 
-## 🌟 Visión General
+## Visión General
 
 **OpenSentinel** es una solución centinela autónoma de ciberseguridad y telemetría en tiempo real para estaciones de trabajo Windows. Opera con un principio estricto de **cero dependencia en la nube**:
 1. Supervisa los arranques físicos de Windows y emite **estrictamente una sola alerta ejecutiva por sesión de encendido** a tus canales de mensajería (Discord, Telegram y WhatsApp), sin bucles de spam al reiniciar servicios.
@@ -31,19 +31,19 @@
 
 ---
 
-## 🚀 Características Principales
+## Características Principales
 
-* **🛑 Centinela Inteligente Anti-Spam:** Compara marcas temporales de arranque del kernel Windows (`boot_session.json`) para garantizar que **solo se envía 1 alerta por encendido físico**, evitando bucles de alertas si el script o servicio se reinicia.
-* **📱 Difusión Multi-Canal:** Soporte nativo y simultáneo para **Webhooks de Discord**, **Bots de Telegram** y **WhatsApp** (vía CallMeBot o webhook propio).
-* **💎 Consola Glassmórfica SPA:** Dashboard oscuro de baja latencia con medidores animados (CPU, RAM, detección dinámica de discos `C:`, `D:`, `E:`), ventana activa y control total de procesos.
-* **👁️ Búfer Forense en RAM (Rolling Ring Buffer):** Grabación continua de pantalla completa y webcam en anillo circular de memoria RAM. Exportable a vídeo MP4 con un solo clic ante cualquier incidente.
-* **🚨 Protocolo de Pánico DEFCON-1:** Gatillo de emergencia de 1 clic: foto sigilosa de la webcam, silenciado de altavoces y bloqueo instantáneo de la sesión de Windows.
-* **🎮 Conciencia de Carga de Trabajo (0% Overhead):** Detecta automáticamente cuándo se ejecutan juegos o tareas pesadas (Blender, simuladores, renderizadores) para pausar la grabación en RAM y mantener un **0.0% de impacto en el rendimiento**.
-* **🛡️ Red Segura & P2P:** Sin abrir puertos en el router. Acceso seguro garantizado con Tailscale o proxy inverso Caddy integrado.
+* **Centinela Inteligente Anti-Spam:** Compara marcas temporales de arranque del kernel Windows (`boot_session.json`) para garantizar que **solo se envía 1 alerta por encendido físico**, evitando bucles de alertas si el script o servicio se reinicia.
+* **Difusión Multi-Canal:** Soporte nativo y simultáneo para **Webhooks de Discord**, **Bots de Telegram** y **WhatsApp** (vía CallMeBot o webhook propio).
+* **Consola Glassmórfica SPA:** Dashboard oscuro de baja latencia con medidores animados (CPU, RAM, detección dinámica de discos `C:`, `D:`, `E:`), ventana activa y control total de procesos.
+* **Búfer Forense en RAM (Rolling Ring Buffer):** Grabación continua de pantalla completa y webcam en anillo circular de memoria RAM. Exportable a vídeo MP4 con un solo clic ante cualquier incidente.
+* **Protocolo de Pánico DEFCON-1:** Gatillo de emergencia de 1 clic: foto sigilosa de la webcam, silenciado de altavoces y bloqueo instantáneo de la sesión de Windows.
+* **Conciencia de Carga de Trabajo (0% Overhead):** Detecta automáticamente cuándo se ejecutan juegos o tareas pesadas (Blender, simuladores, renderizadores) para pausar la grabación en RAM y mantener un **0.0% de impacto en el rendimiento**.
+* **Red Segura y P2P:** Sin abrir puertos en el router. Acceso seguro garantizado con Tailscale o proxy inverso Caddy integrado.
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
                                   +-----------------------+
@@ -78,7 +78,7 @@
 
 ---
 
-## ⚡ Quick Start: Instalación Paso a Paso
+## Quick Start: Instalación Paso a Paso
 
 ### Paso 1: Requisitos Previos
 * **Sistema Operativo:** Windows 10 o Windows 11 (64 bits).
@@ -102,12 +102,12 @@ Haz **doble clic en `scripts/install.bat`** (o ejecuta en consola `python main.p
 
 ---
 
-## 📱 Guía de Configuración de Canales
+## Guía de Configuración de Canales
 
 El asistente `scripts/setup.bat` (o el panel de ajustes de la web) te permite activar los canales que desees:
 
 ### 1. Discord Webhooks (Recomendado)
-1. En tu servidor de Discord, entra en los ajustes de cualquier canal de texto: **Canal ➔ Editar Canal (rueda dentada) ➔ Integraciones**.
+1. En tu servidor de Discord, entra en los ajustes de cualquier canal de texto: **Canal > Editar Canal (rueda dentada) > Integraciones**.
 2. Haz clic en **"Crear Webhook"** (o "Ver Webhooks").
 3. Asigna el nombre que quieras (ej: `OpenSentinel`) y haz clic en **"Copiar URL de Webhook"**.
 4. Pega la URL en el instalador (`https://discord.com/api/webhooks/...`).
@@ -137,7 +137,7 @@ Si deseas controlar tu PC desde tu móvil o fuera de casa sin abrir puertos en t
 
 ---
 
-## 🛠️ Gestión del Centinela en Segundo Plano
+## Gestión del Centinela en Segundo Plano
 
 En la carpeta `scripts/` dispones de herramientas rápidas:
 
@@ -151,7 +151,7 @@ En la carpeta `scripts/` dispones de herramientas rápidas:
 
 ---
 
-## 🔒 Privacidad y Protocolos de Seguridad
+## Privacidad y Protocolos de Seguridad
 
 * **Filtrado de IPs por Defecto:** El servidor web solo acepta conexiones procedentes de subredes privadas locales (`192.168.*`, `10.*`, `172.*`, `127.0.0.1`) y de la malla P2P de Tailscale (`100.*`). Peticiones públicas externas son rechazadas automáticamente.
 * **Forense Cero-Desgaste:** Las capturas en búfer continuo se mantienen en memoria RAM volátil. No se escribe ni un solo byte en disco hasta que el usuario pulsa explícitamente "Generar Clip Forense".
@@ -159,7 +159,7 @@ En la carpeta `scripts/` dispones de herramientas rápidas:
 
 ---
 
-## 📡 Referencia de API REST
+## Referencia de API REST
 
 | Endpoint | Método | Descripción |
 | :--- | :--- | :--- |
@@ -181,7 +181,7 @@ En la carpeta `scripts/` dispones de herramientas rápidas:
 
 ---
 
-## ❓ FAQ & Solución de Problemas
+## FAQ & Solución de Problemas
 
 <details>
 <summary><b>1. Python no se reconoce como comando interno o externo</b></summary>
@@ -195,7 +195,7 @@ Haz clic en <b>"Permitir acceso"</b> asegurándote de que la casilla <i>"Redes p
 
 <details>
 <summary><b>3. La cámara web muestra pantalla negra en el panel</b></summary>
-En Windows 10/11, abre <b>Configuración ➔ Privacidad y Seguridad ➔ Cámara</b> y comprueba que <i>"Permitir que las aplicaciones de escritorio accedan a la cámara"</i> esté activado.
+En Windows 10/11, abre <b>Configuración > Privacidad y Seguridad > Cámara</b> y comprueba que <i>"Permitir que las aplicaciones de escritorio accedan a la cámara"</i> esté activado.
 </details>
 
 <details>
@@ -205,7 +205,7 @@ Abre tu navegador y entra en <a href="http://127.0.0.1:8888">http://127.0.0.1:88
 
 ---
 
-## 👥 Créditos de Ingeniería y Co-Autoría
+## Créditos de Ingeniería y Co-Autoría
 
 OpenSentinel ha sido diseñado, construido y fortificado mediante arquitectura de alta fiabilidad por:
 * **Alberto Trujillo Mingorance** ([@atrumin16](https://github.com/atrumin16)) — Arquitectura de sistemas, telemetría hardware de bajo nivel, motor forense en RAM y diseño del protocolo DEFCON-1.
@@ -213,6 +213,6 @@ OpenSentinel ha sido diseñado, construido y fortificado mediante arquitectura d
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Distribuido bajo la Licencia **MIT**. Consulta [`LICENSE`](LICENSE) para más información.
