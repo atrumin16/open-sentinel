@@ -27,6 +27,7 @@ from ..core.power import (
 )
 from ..core.process_mgr import get_top_processes, kill_process_by_pid
 from ..notifiers.dispatcher import dispatch_boot_alert, dispatch_evidence_alert, send_test_notification
+from ..i18n import t, get_web_translations, SUPPORTED_LANGUAGES, WEB_TRANSLATIONS
 
 def is_trusted_ip(ip: str) -> bool:
     if not ip: return False
@@ -63,7 +64,28 @@ def create_app():
         cfg = load_config()
         hw = get_full_hardware_summary()
         net = get_network_summary(port=cfg.get("PORT", 8888))
-        return render_template("index.html", config=cfg, hw=hw, net=net)
+        lang = cfg.get("LANGUAGE", "en")
+        translations = get_web_translations(lang)
+        return render_template(
+            "index.html",
+            config=cfg,
+            hw=hw,
+            net=net,
+            lang=lang,
+            translations=translations,
+            all_translations=WEB_TRANSLATIONS,
+            supported_languages=SUPPORTED_LANGUAGES
+        )
+
+    @app.route("/api/i18n")
+    def api_i18n():
+        target_lang = request.args.get("lang")
+        if target_lang:
+            return jsonify(get_web_translations(target_lang))
+        return jsonify({
+            "supported": SUPPORTED_LANGUAGES,
+            "translations": WEB_TRANSLATIONS
+        })
 
     # --------------------------------------------------------------------------
     # API: TELEMETRÍA Y PROCESOS
@@ -240,6 +262,8 @@ def create_app():
         cfg = load_config()
         cfg.update(data)
         ok = save_config(cfg)
-        return jsonify({"success": ok, "msg": "Ajustes guardados correctamente" if ok else "Error al guardar"})
+        current_lang = cfg.get("LANGUAGE", "en")
+        msg = t("settings_saved", current_lang) if ok else t("settings_save_error", current_lang)
+        return jsonify({"success": ok, "msg": msg})
 
     return app

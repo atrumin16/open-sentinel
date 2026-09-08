@@ -59,6 +59,33 @@
     .brand-text h1 { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; color: #fff; }
     .brand-text p { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 1px; }
     
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .lang-picker {
+      display: flex;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 3px 8px;
+      border-radius: 14px;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lang-btn:hover { color: #fff; }
+    .lang-btn.active {
+      background: var(--cyan);
+      color: #080c14;
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
     .status-badge {
       display: flex; align-items: center; gap: 6px;
       font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
@@ -297,12 +324,18 @@
         </div>
         <div class="brand-text">
           <h1 id="top-hostname">{{ hw.hostname }}</h1>
-          <p id="top-user">{{ hw.user }} // SESIÓN PROTEGIDA</p>
+          <p id="top-user">{{ hw.user }} // <span data-i18n="protected_session">{{ translations.protected_session }}</span></p>
         </div>
       </div>
-      <div class="status-badge">
-        <div class="pulse-dot"></div>
-        <span>ONLINE</span>
+      <div class="header-actions">
+        <div class="lang-picker">
+          <button class="lang-btn {% if lang == 'en' %}active{% endif %}" id="btn-lang-en" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn {% if lang == 'es' %}active{% endif %}" id="btn-lang-es" onclick="setLanguage('es')">ES</button>
+        </div>
+        <div class="status-badge">
+          <div class="pulse-dot"></div>
+          <span data-i18n="status_online">{{ translations.status_online }}</span>
+        </div>
       </div>
     </div>
 
@@ -310,23 +343,23 @@
     <nav class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('telemetry')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <span>Métricas</span>
+        <span data-i18n="tab_metrics">{{ translations.tab_metrics }}</span>
       </button>
       <button class="tab-btn" onclick="switchTab('surveillance')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span>Vigilancia</span>
+        <span data-i18n="tab_surveillance">{{ translations.tab_surveillance }}</span>
       </button>
       <button class="tab-btn" onclick="switchTab('security')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span>Seguridad</span>
+        <span data-i18n="tab_security">{{ translations.tab_security }}</span>
       </button>
       <button class="tab-btn" onclick="switchTab('processes')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <span>Procesos</span>
+        <span data-i18n="tab_processes">{{ translations.tab_processes }}</span>
       </button>
       <button class="tab-btn" onclick="switchTab('config')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Ajustes</span>
+        <span data-i18n="tab_config">{{ translations.tab_config }}</span>
       </button>
     </nav>
 
@@ -334,18 +367,18 @@
     <div id="tab-telemetry" class="tab-pane active">
       <div class="glass-card">
         <div class="card-head">
-          <h2>TELEMETRÍA DEL SISTEMA</h2>
+          <h2 data-i18n="telemetry_title">{{ translations.telemetry_title }}</h2>
           <span class="meta" id="live-uptime">Uptime: {{ hw.uptime.uptime_str }}</span>
         </div>
 
         <div class="gauge-grid">
           <div class="gauge-item">
-            <div class="gauge-label">Carga de CPU</div>
+            <div class="gauge-label" data-i18n="cpu_load">{{ translations.cpu_load }}</div>
             <div class="gauge-val" id="val-cpu">--%</div>
             <div class="bar-track"><div class="bar-fill" id="bar-cpu" style="width: 0%; background: var(--cyan);"></div></div>
           </div>
           <div class="gauge-item">
-            <div class="gauge-label">Memoria RAM</div>
+            <div class="gauge-label" data-i18n="ram_memory">{{ translations.ram_memory }}</div>
             <div class="gauge-val" id="val-ram">{{ hw.ram.used_gb }}/{{ hw.ram.total_gb }} GB</div>
             <div class="bar-track"><div class="bar-fill" id="bar-ram" style="width: {{ hw.ram.pct }}%; background: var(--emerald);"></div></div>
           </div>
@@ -355,8 +388,8 @@
           {% for d in hw.disks %}
           <div class="gauge-item" style="margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px;">
-              <span style="color: var(--text-muted); font-weight: 700;">Unidad {{ d.drive }}</span>
-              <span style="color: #fff; font-weight: 800;">{{ d.free_gb }} GB libres ({{ d.pct }}% ocupado)</span>
+              <span style="color: var(--text-muted); font-weight: 700;"><span data-i18n="drive">{{ translations.drive }}</span> {{ d.drive }}</span>
+              <span style="color: #fff; font-weight: 800;">{{ d.free_gb }} GB <span data-i18n="free_of">{{ translations.free_of }}</span> ({{ d.pct }}% <span data-i18n="used">{{ translations.used }}</span>)</span>
             </div>
             <div class="bar-track"><div class="bar-fill" style="width: {{ d.pct }}%; background: var(--indigo);"></div></div>
           </div>
@@ -364,23 +397,23 @@
         </div>
 
         <div style="margin-top: 10px;">
-          <button class="action-button btn-cyan" style="width: 100%; text-align: center; align-items: center;" onclick="execAction('/api/send_boot_alert', 'Transmitiendo reporte a canales...')">
-            <span>📡 TRANSMITIR INFORME A CANALES DE ALERTA</span>
-            <span class="btn-sub">Envía telemetría y enlaces activos a Discord / Telegram / WhatsApp</span>
+          <button class="action-button btn-cyan" style="width: 100%; text-align: center; align-items: center;" onclick="execAction('/api/send_boot_alert', t('toast_broadcasting_report'))">
+            <span data-i18n="btn_broadcast_report">{{ translations.btn_broadcast_report }}</span>
+            <span class="btn-sub" data-i18n="btn_broadcast_report_sub">{{ translations.btn_broadcast_report_sub }}</span>
           </button>
         </div>
       </div>
 
       <div class="glass-card">
         <div class="card-head">
-          <h2>ESPECIFICACIONES DEL HARDWARE</h2>
-          <span class="meta" style="color: var(--emerald);">DETECTADO</span>
+          <h2 data-i18n="hw_specs_title">{{ translations.hw_specs_title }}</h2>
+          <span class="meta" style="color: var(--emerald);" data-i18n="detected_badge">{{ translations.detected_badge }}</span>
         </div>
-        <div class="data-row"><span class="data-k">Procesador</span><span class="data-v">{{ hw.cpu }}</span></div>
-        <div class="data-row"><span class="data-k">Tarjeta Gráfica</span><span class="data-v">{{ hw.gpu }}</span></div>
-        <div class="data-row"><span class="data-k">Memoria Física</span><span class="data-v">{{ hw.ram.total_gb }} GB RAM</span></div>
-        <div class="data-row"><span class="data-k">Ventana en Foco</span><span class="data-v" id="live-active-win" style="color: var(--cyan); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ hw.active_window }}</span></div>
-        <div class="data-row"><span class="data-k">Modo Juegos/Carga</span><span class="data-v" id="live-game-mode" style="color: var(--emerald);">0% CARGA RESIDUAL</span></div>
+        <div class="data-row"><span class="data-k" data-i18n="processor">{{ translations.processor }}</span><span class="data-v">{{ hw.cpu }}</span></div>
+        <div class="data-row"><span class="data-k" data-i18n="gpu">{{ translations.gpu }}</span><span class="data-v">{{ hw.gpu }}</span></div>
+        <div class="data-row"><span class="data-k" data-i18n="ram_physical">{{ translations.ram_physical }}</span><span class="data-v">{{ hw.ram.total_gb }} GB RAM</span></div>
+        <div class="data-row"><span class="data-k" data-i18n="active_window">{{ translations.active_window }}</span><span class="data-v" id="live-active-win" style="color: var(--cyan); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ hw.active_window }}</span></div>
+        <div class="data-row"><span class="data-k" data-i18n="gaming_mode">{{ translations.gaming_mode }}</span><span class="data-v" id="live-game-mode" style="color: var(--emerald);" data-i18n="residual_zero">{{ translations.residual_zero }}</span></div>
       </div>
     </div>
 
@@ -388,29 +421,29 @@
     <div id="tab-surveillance" class="tab-pane">
       <div class="glass-card">
         <div class="card-head">
-          <h2>CENTRO FORENSE & CAPTURA</h2>
-          <span class="meta" style="color: var(--emerald);">100% EN RAM</span>
+          <h2 data-i18n="surveillance_title">{{ translations.surveillance_title }}</h2>
+          <span class="meta" style="color: var(--emerald);" data-i18n="in_ram_badge">{{ translations.in_ram_badge }}</span>
         </div>
 
         <div class="btn-row-2">
-          <button class="action-button btn-cyan" onclick="loadMedia('/api/screenshot', 'Captura de Pantalla GDI')">
-            <span>CAPTURAR PANTALLA</span>
-            <span class="btn-sub">Hardware GDI directo</span>
+          <button class="action-button btn-cyan" onclick="loadMedia('/api/screenshot', t('btn_capture_screen'))">
+            <span data-i18n="btn_capture_screen">{{ translations.btn_capture_screen }}</span>
+            <span class="btn-sub" data-i18n="btn_capture_screen_sub">{{ translations.btn_capture_screen_sub }}</span>
           </button>
-          <button class="action-button btn-emerald" onclick="loadMedia('/api/webcam', 'Sensor de Cámara')">
-            <span>FOTO WEBCAM</span>
-            <span class="btn-sub">Sensor óptico en vivo</span>
+          <button class="action-button btn-emerald" onclick="loadMedia('/api/webcam', t('btn_webcam_snap'))">
+            <span data-i18n="btn_webcam_snap">{{ translations.btn_webcam_snap }}</span>
+            <span class="btn-sub" data-i18n="btn_webcam_snap_sub">{{ translations.btn_webcam_snap_sub }}</span>
           </button>
         </div>
 
         <div class="btn-row-2" style="margin-top: 4px;">
           <button class="action-button btn-indigo" onclick="generateForensicClip()">
-            <span>EXPORTAR VIDEO (5 MIN)</span>
-            <span class="btn-sub">Pantalla + PiP Webcam</span>
+            <span data-i18n="btn_export_video">{{ translations.btn_export_video }}</span>
+            <span class="btn-sub" data-i18n="btn_export_video_sub">{{ translations.btn_export_video_sub }}</span>
           </button>
-          <button class="action-button btn-amber" onclick="execAction('/api/send_evidence', 'Transmitiendo evidencia a canales...')">
-            <span>ENVIAR EVIDENCIA</span>
-            <span class="btn-sub">Guarda foto en canales</span>
+          <button class="action-button btn-amber" onclick="execAction('/api/send_evidence', t('toast_sending_evidence'))">
+            <span data-i18n="btn_send_evidence">{{ translations.btn_send_evidence }}</span>
+            <span class="btn-sub" data-i18n="btn_send_evidence_sub">{{ translations.btn_send_evidence_sub }}</span>
           </button>
         </div>
 
@@ -419,10 +452,10 @@
           <img id="media-img" style="display: none;" alt="Preview">
           <video id="media-video" controls style="display: none;"></video>
           <div class="media-toolbar">
-            <span id="media-label" style="color: var(--text-dim);">Evidencia Forense</span>
+            <span id="media-label" style="color: var(--text-dim);" data-i18n="forensic_evidence_label">{{ translations.forensic_evidence_label }}</span>
             <div style="display: flex; gap: 6px;">
-              <a id="media-dl" download="evidencia.jpg">GUARDAR</a>
-              <button onclick="closeMediaViewer()">CERRAR</button>
+              <a id="media-dl" download="evidence.jpg" data-i18n="btn_save">{{ translations.btn_save }}</a>
+              <button onclick="closeMediaViewer()" data-i18n="btn_close">{{ translations.btn_close }}</button>
             </div>
           </div>
         </div>
@@ -430,10 +463,10 @@
 
       <div class="glass-card" id="defcon-intruder-card" style="display: none; border-color: rgba(244, 63, 94, 0.7); background: rgba(244, 63, 94, 0.05);">
         <div class="card-head">
-          <h2 style="color: var(--rose);">🚨 REGISTRO DE INTRUSO (DEFCON-1)</h2>
-          <span class="meta" id="defcon-time" style="color: var(--rose);">REGISTRADO</span>
+          <h2 style="color: var(--rose);" data-i18n="intruder_card_title">{{ translations.intruder_card_title }}</h2>
+          <span class="meta" id="defcon-time" style="color: var(--rose);" data-i18n="intruder_logged_badge">{{ translations.intruder_logged_badge }}</span>
         </div>
-        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">Fotograma silencioso asegurado en RAM al disparar el modo pánico:</p>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;" data-i18n="intruder_card_desc">{{ translations.intruder_card_desc }}</p>
         <div class="media-box">
           <img id="defcon-img" src="/api/last_defcon_photo" alt="Intruso">
         </div>
@@ -444,71 +477,71 @@
     <div id="tab-security" class="tab-pane">
       <div class="glass-card" style="border-color: rgba(244, 63, 94, 0.7); background: rgba(244, 63, 94, 0.06);">
         <div class="card-head">
-          <h2 style="color: var(--rose);">PROTOCOLO DEFCON-1 // ANTI-INTRUSOS</h2>
-          <span class="meta" style="color: var(--rose); font-weight: 800;">INSTANTÁNEO</span>
+          <h2 style="color: var(--rose);" data-i18n="defcon_title">{{ translations.defcon_title }}</h2>
+          <span class="meta" style="color: var(--rose); font-weight: 800;" data-i18n="instant_badge">{{ translations.instant_badge }}</span>
         </div>
-        <p style="font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px;">
-          Dispara el bloqueo de pánico: toma una <strong>foto silenciosa del intruso</strong> en RAM, silencia el hardware y <strong>bloquea Windows en 1 milisegundo</strong>.
+        <p style="font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px;" data-i18n-html="defcon_desc">
+          {{ translations.defcon_desc | safe }}
         </p>
         <button class="action-button btn-panic-glow" style="width: 100%; text-align: center; align-items: center; padding: 14px;" onclick="triggerDefconLock()">
-          <span style="font-size: 13px; letter-spacing: 1px; font-weight: 900;">🚨 ACTIVAR BLOQUEO DEFCON 1</span>
-          <span class="btn-sub" style="color: #fca5a5;">Foto Silenciosa + Bloqueo Forzoso</span>
+          <span style="font-size: 13px; letter-spacing: 1px; font-weight: 900;" data-i18n="btn_trigger_defcon">{{ translations.btn_trigger_defcon }}</span>
+          <span class="btn-sub" style="color: #fca5a5;" data-i18n="btn_trigger_defcon_sub">{{ translations.btn_trigger_defcon_sub }}</span>
         </button>
       </div>
 
       <div class="glass-card">
         <div class="card-head">
-          <h2>GESTIÓN DE SESIÓN Y ENERGÍA</h2>
-          <span class="meta" style="color: var(--rose);">CONTROL REMOTO</span>
+          <h2 data-i18n="power_title">{{ translations.power_title }}</h2>
+          <span class="meta" style="color: var(--rose);" data-i18n="remote_control_badge">{{ translations.remote_control_badge }}</span>
         </div>
         <div class="btn-row-2">
-          <button class="action-button btn-cyan" onclick="execAction('/api/power/lock', 'Bloqueando sesión...')">
-            <span>BLOQUEAR SESIÓN</span>
+          <button class="action-button btn-cyan" onclick="execAction('/api/power/lock', t('toast_locking'))">
+            <span data-i18n="btn_lock_session">{{ translations.btn_lock_session }}</span>
             <span class="btn-sub">LockWorkStation</span>
           </button>
-          <button class="action-button btn-amber" onclick="execAction('/api/power/sleep', 'Suspendiendo PC...')">
-            <span>MODO SUSPENSIÓN</span>
-            <span class="btn-sub">Reposo S3</span>
+          <button class="action-button btn-amber" onclick="execAction('/api/power/sleep', t('toast_sleeping'))">
+            <span data-i18n="btn_sleep_mode">{{ translations.btn_sleep_mode }}</span>
+            <span class="btn-sub" data-i18n="btn_sleep_sub">{{ translations.btn_sleep_sub }}</span>
           </button>
         </div>
         <div class="btn-row-2">
-          <button class="action-button btn-rose" onclick="confirmModal('APAGAR SISTEMA', '¿Confirmas que deseas apagar el equipo remotamente?', () => execAction('/api/power/shutdown', 'Apagando en 10s...'))">
-            <span>APAGAR SISTEMA</span>
-            <span class="btn-sub">Temporizador 10s</span>
+          <button class="action-button btn-rose" onclick="confirmModal(t('modal_confirm_shutdown_title'), t('modal_confirm_shutdown_msg'), () => execAction('/api/power/shutdown', t('toast_shutting_down')))">
+            <span data-i18n="btn_shutdown">{{ translations.btn_shutdown }}</span>
+            <span class="btn-sub" data-i18n="btn_shutdown_sub">{{ translations.btn_shutdown_sub }}</span>
           </button>
-          <button class="action-button" onclick="confirmModal('REINICIAR SISTEMA', '¿Confirmas que deseas reiniciar el equipo remotamente?', () => execAction('/api/power/reboot', 'Reiniciando equipo...'))">
-            <span>REINICIAR SISTEMA</span>
-            <span class="btn-sub">Reinicio Seguro 10s</span>
+          <button class="action-button" onclick="confirmModal(t('modal_confirm_reboot_title'), t('modal_confirm_reboot_msg'), () => execAction('/api/power/reboot', t('toast_rebooting')))">
+            <span data-i18n="btn_reboot">{{ translations.btn_reboot }}</span>
+            <span class="btn-sub" data-i18n="btn_reboot_sub">{{ translations.btn_reboot_sub }}</span>
           </button>
         </div>
       </div>
 
       <div class="glass-card">
         <div class="card-head">
-          <h2>PANTALLA, AUDIO Y ALARMAS</h2>
+          <h2 data-i18n="display_audio_title">{{ translations.display_audio_title }}</h2>
         </div>
         <div class="btn-row-2">
-          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_screen', 'Encendiendo pantalla...')">
-            <span>DESPERTAR PANTALLA</span>
-            <span class="btn-sub">Encender Monitor / DWM</span>
+          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_screen', t('toast_waking_screen'))">
+            <span data-i18n="btn_wake_screen">{{ translations.btn_wake_screen }}</span>
+            <span class="btn-sub" data-i18n="btn_wake_screen_sub">{{ translations.btn_wake_screen_sub }}</span>
           </button>
-          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_pc', 'Enviando paquete WoL...')">
-            <span>DESPERTAR PC (WoL)</span>
-            <span class="btn-sub">Magic Packet Broadcast</span>
+          <button class="action-button btn-emerald" onclick="execAction('/api/power/wake_pc', t('toast_sending_wol'))">
+            <span data-i18n="btn_wake_pc">{{ translations.btn_wake_pc }}</span>
+            <span class="btn-sub" data-i18n="btn_wake_pc_sub">{{ translations.btn_wake_pc_sub }}</span>
           </button>
         </div>
         <div class="btn-row-3" style="margin-top: 4px;">
-          <button class="action-button" onclick="execAction('/api/power/mute', 'Alternando audio...')">
-            <span>SILENCIAR</span>
-            <span class="btn-sub">Audio Mute</span>
+          <button class="action-button" onclick="execAction('/api/power/mute', t('toast_toggling_audio'))">
+            <span data-i18n="btn_mute">{{ translations.btn_mute }}</span>
+            <span class="btn-sub">Mute</span>
           </button>
-          <button class="action-button" onclick="execAction('/api/power/volume?level=50', 'Fijando volumen al 50%...')">
-            <span>VOL 50%</span>
-            <span class="btn-sub">Nivel Medio</span>
+          <button class="action-button" onclick="execAction('/api/power/volume?level=50', t('toast_setting_volume'))">
+            <span data-i18n="btn_vol50">{{ translations.btn_vol50 }}</span>
+            <span class="btn-sub" data-i18n="btn_vol50_sub">{{ translations.btn_vol50_sub }}</span>
           </button>
-          <button class="action-button" onclick="execAction('/api/power/cancel', 'Cancelando apagado/reinicio...')">
-            <span>CANCELAR</span>
-            <span class="btn-sub">Abortar</span>
+          <button class="action-button" onclick="execAction('/api/power/cancel', t('toast_cancelling'))">
+            <span data-i18n="btn_cancel_power">{{ translations.btn_cancel_power }}</span>
+            <span class="btn-sub" data-i18n="btn_cancel_power_sub">{{ translations.btn_cancel_power_sub }}</span>
           </button>
         </div>
       </div>
@@ -518,11 +551,11 @@
     <div id="tab-processes" class="tab-pane">
       <div class="glass-card">
         <div class="card-head">
-          <h2>PROCESOS ACTIVOS (TOP MEMORIA)</h2>
-          <button style="background: none; border: none; color: var(--cyan); font-size: 10px; font-weight: 800; cursor: pointer;" onclick="loadProcesses()">REFRESCAR</button>
+          <h2 data-i18n="processes_title">{{ translations.processes_title }}</h2>
+          <button style="background: none; border: none; color: var(--cyan); font-size: 10px; font-weight: 800; cursor: pointer;" onclick="loadProcesses()" data-i18n="btn_refresh">{{ translations.btn_refresh }}</button>
         </div>
         <div id="processes-list">
-          <p style="font-size: 11px; color: var(--text-muted); padding: 10px 0;">Cargando procesos...</p>
+          <p style="font-size: 11px; color: var(--text-muted); padding: 10px 0;" data-i18n="loading_processes">{{ translations.loading_processes }}</p>
         </div>
       </div>
     </div>
@@ -531,8 +564,19 @@
     <div id="tab-config" class="tab-pane">
       <div class="glass-card">
         <div class="card-head">
-          <h2>CANALES DE NOTIFICACIÓN</h2>
-          <span class="meta" style="color: var(--cyan);">CONFIGURACIÓN</span>
+          <h2 data-i18n="channels_title">{{ translations.channels_title }}</h2>
+          <span class="meta" style="color: var(--cyan);" data-i18n="config_meta">{{ translations.config_meta }}</span>
+        </div>
+
+        <!-- Language Selector -->
+        <div style="background: var(--card-inner); padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label data-i18n="lbl_language">{{ translations.lbl_language }}</label>
+            <select id="cfg-language" class="form-input" onchange="setLanguage(this.value)">
+              <option value="en" {% if lang == 'en' %}selected{% endif %}>🇬🇧 English (Global)</option>
+              <option value="es" {% if lang == 'es' %}selected{% endif %}>🇪🇸 Español (Spanish)</option>
+            </select>
+          </div>
         </div>
 
         <!-- Discord -->
@@ -545,7 +589,7 @@
             <label>Webhook URL</label>
             <input type="text" class="form-input" id="cfg-discord-url" value="{{ config.DISCORD_WEBHOOK_URL }}" placeholder="https://discord.com/api/webhooks/...">
           </div>
-          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('discord')">🔔 Probar Discord</button>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('discord')" data-i18n="btn_test_discord">{{ translations.btn_test_discord }}</button>
         </div>
 
         <!-- Telegram -->
@@ -562,7 +606,7 @@
             <label>Chat ID</label>
             <input type="text" class="form-input" id="cfg-telegram-chat" value="{{ config.TELEGRAM_CHAT_ID }}" placeholder="123456789">
           </div>
-          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('telegram')">🔔 Probar Telegram</button>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('telegram')" data-i18n="btn_test_telegram">{{ translations.btn_test_telegram }}</button>
         </div>
 
         <!-- WhatsApp -->
@@ -572,18 +616,18 @@
             <input type="checkbox" id="cfg-whatsapp-enabled" {% if config.WHATSAPP_ENABLED %}checked{% endif %}>
           </div>
           <div class="form-group" style="margin-top: 8px;">
-            <label>Teléfono (con prefijo +34...)</label>
+            <label>Phone (+34...)</label>
             <input type="text" class="form-input" id="cfg-whatsapp-phone" value="{{ config.WHATSAPP_PHONE }}" placeholder="+34600000000">
           </div>
           <div class="form-group">
             <label>CallMeBot API Key</label>
             <input type="text" class="form-input" id="cfg-whatsapp-apikey" value="{{ config.WHATSAPP_API_KEY }}" placeholder="123456">
           </div>
-          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('whatsapp')">🔔 Probar WhatsApp</button>
+          <button class="action-button btn-cyan" style="padding: 6px 12px; font-size: 10px;" onclick="testChannel('whatsapp')" data-i18n="btn_test_whatsapp">{{ translations.btn_test_whatsapp }}</button>
         </div>
 
         <button class="action-button btn-emerald" style="width: 100%; text-align: center; align-items: center; padding: 12px; margin-top: 6px;" onclick="saveConfigSettings()">
-          <span>💾 GUARDAR AJUSTES</span>
+          <span data-i18n="btn_save_config">{{ translations.btn_save_config }}</span>
         </button>
       </div>
     </div>
@@ -593,11 +637,11 @@
   <!-- Modal Global de Confirmación -->
   <div class="modal-overlay" id="confirm-modal">
     <div class="modal-card">
-      <div class="modal-title" id="modal-title">CONFIRMACIÓN DE SEGURIDAD</div>
-      <div class="modal-desc" id="modal-msg">¿Deseas ejecutar esta acción remota?</div>
+      <div class="modal-title" id="modal-title" data-i18n="modal_title">{{ translations.modal_title }}</div>
+      <div class="modal-desc" id="modal-msg" data-i18n="modal_default_msg">{{ translations.modal_default_msg }}</div>
       <div class="modal-actions">
-        <button class="btn-modal-confirm" id="modal-btn-ok">EJECUTAR</button>
-        <button class="btn-modal-cancel" onclick="closeConfirmModal()">CANCELAR</button>
+        <button class="btn-modal-confirm" id="modal-btn-ok" data-i18n="modal_btn_execute">{{ translations.modal_btn_execute }}</button>
+        <button class="btn-modal-cancel" onclick="closeConfirmModal()" data-i18n="modal_btn_cancel">{{ translations.modal_btn_cancel }}</button>
       </div>
     </div>
   </div>
@@ -605,7 +649,67 @@
   <div class="toast" id="toast-box"></div>
 
   <script>
+    const I18N = {{ all_translations | tojson }};
+    let currentLang = '{{ lang }}';
     let activeModalCallback = null;
+
+    function t(key, params = {}) {
+      const dict = I18N[currentLang] || I18N['en'] || {};
+      let text = dict[key] !== undefined ? dict[key] : key;
+      for (const [pKey, pVal] of Object.entries(params)) {
+        text = text.replace(new RegExp(`\\\\{${pKey}\\\\}`, 'g'), pVal);
+      }
+      return text;
+    }
+
+    function setLanguage(lang, syncServer = true) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      document.documentElement.lang = lang;
+
+      // Update Header Lang Switcher
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-lang-' + lang);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Update Settings Dropdown
+      const selectEl = document.getElementById('cfg-language');
+      if (selectEl) selectEl.value = lang;
+
+      // Translate all data-i18n innerText
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[lang][key] !== undefined) {
+          el.innerText = I18N[lang][key];
+        }
+      });
+
+      // Translate all data-i18n-html innerHTML
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (I18N[lang][key] !== undefined) {
+          el.innerHTML = I18N[lang][key];
+        }
+      });
+
+      localStorage.setItem('sentinel_lang', lang);
+
+      if (syncServer) {
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ LANGUAGE: lang })
+        }).catch(() => {});
+      }
+    }
+
+    // Auto-sync stored language preference on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('sentinel_lang');
+      if (savedLang && savedLang !== currentLang && I18N[savedLang]) {
+        setLanguage(savedLang, false);
+      }
+    });
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -622,10 +726,10 @@
     }
 
     function showToast(msg) {
-      const t = document.getElementById('toast-box');
-      t.innerText = msg;
-      t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2400);
+      const tBox = document.getElementById('toast-box');
+      tBox.innerText = msg;
+      tBox.style.display = 'block';
+      setTimeout(() => { tBox.style.display = 'none'; }, 2400);
     }
 
     async function execAction(url, pendingMsg) {
@@ -633,9 +737,9 @@
       try {
         const res = await fetch(url, { method: 'POST' });
         const data = await res.json();
-        showToast(data.msg || 'Ejecutado con exito');
+        showToast(data.msg || 'OK');
       } catch(e) {
-        showToast('Error de comunicacion con el servidor');
+        showToast(t('toast_comm_error'));
       }
     }
 
@@ -659,7 +763,7 @@
       }
     });
 
-    // Telemetría en tiempo real
+    // Telemetry Polling
     async function updateStats() {
       try {
         const res = await fetch('/api/stats');
@@ -671,14 +775,14 @@
         document.getElementById('bar-ram').style.width = d.ram.pct + '%';
         document.getElementById('live-uptime').innerText = 'Uptime: ' + d.uptime.uptime_str;
         document.getElementById('live-active-win').innerText = d.active_window;
-        document.getElementById('live-game-mode').innerText = d.is_optimized ? `ACTIVO (${d.workload_name.toUpperCase()})` : '0% CARGA RESIDUAL';
+        document.getElementById('live-game-mode').innerText = d.is_optimized ? `ACTIVE (${d.workload_name.toUpperCase()})` : t('residual_zero');
       } catch(e) {}
     }
     setInterval(updateStats, 2000);
 
     // Media Viewer
     function loadMedia(url, label) {
-      showToast('Obteniendo ' + label + '...');
+      showToast(t('toast_fetch_media', { label }));
       const box = document.getElementById('media-container');
       const img = document.getElementById('media-img');
       const vid = document.getElementById('media-video');
@@ -692,7 +796,7 @@
       const fullUrl = url + '?t=' + Date.now();
       img.src = fullUrl;
       dl.href = fullUrl;
-      dl.download = 'captura_' + Date.now() + '.jpg';
+      dl.download = 'capture_' + Date.now() + '.jpg';
       document.getElementById('media-label').innerText = label;
     }
 
@@ -705,7 +809,7 @@
     }
 
     async function generateForensicClip() {
-      showToast('Compilando video forense desde memoria RAM...');
+      showToast(t('toast_compiling_video'));
       const box = document.getElementById('media-container');
       const img = document.getElementById('media-img');
       const vid = document.getElementById('media-video');
@@ -725,38 +829,38 @@
         vid.src = d.url + '?t=' + Date.now();
         dl.href = d.url;
         dl.download = d.filename;
-        document.getElementById('media-label').innerText = 'Video Forense (' + d.duration + ')';
+        document.getElementById('media-label').innerText = t('forensic_evidence_label') + ' (' + d.duration + ')';
         vid.play();
-        showToast('Video listo');
+        showToast(t('toast_video_ready'));
       } catch(e) {
-        showToast('Error al compilar video');
+        showToast(t('toast_video_error'));
       }
     }
 
     function triggerDefconLock() {
-      confirmModal('ACTIVAR MODO PANICO DEFCON-1', '¿Confirmas el bloqueo forzoso inmediato de la estacion y captura silenciosa de evidencia?', async () => {
-        showToast('DISPARANDO BLOQUEO DEFCON-1...');
+      confirmModal(t('modal_confirm_defcon_title'), t('modal_confirm_defcon_msg'), async () => {
+        showToast(t('toast_defcon_firing'));
         try {
           const res = await fetch('/api/defcon/panic', { method: 'POST' });
           const d = await res.json();
-          showToast(d.msg || 'DEFCON-1 EJECUTADO');
+          showToast(d.msg || t('toast_defcon_done'));
           document.getElementById('defcon-intruder-card').style.display = 'block';
           document.getElementById('defcon-img').src = '/api/last_defcon_photo?t=' + Date.now();
           switchTab('surveillance');
         } catch(e) {
-          showToast('Error al ejecutar DEFCON-1');
+          showToast(t('toast_defcon_error'));
         }
       });
     }
 
     async function loadProcesses() {
       const container = document.getElementById('processes-list');
-      container.innerHTML = '<p style="font-size: 11px; color: var(--text-muted);">Cargando procesos...</p>';
+      container.innerHTML = `<p style="font-size: 11px; color: var(--text-muted);">${t('loading_processes')}</p>`;
       try {
         const res = await fetch('/api/processes');
         const procs = await res.json();
         if (!procs || procs.length === 0) {
-          container.innerHTML = '<p style="font-size: 11px; color: var(--text-muted);">Sin procesos pesados en ejecucion.</p>';
+          container.innerHTML = `<p style="font-size: 11px; color: var(--text-muted);">${t('no_heavy_processes')}</p>`;
           return;
         }
         let html = '';
@@ -769,38 +873,39 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 10px; font-weight: 700; color: var(--cyan); background: rgba(56,189,248,0.1); padding: 3px 6px; border-radius: 4px;">${p.mem_mb} MB</span>
-                <button class="proc-kill-btn" onclick="killProc(${p.pid}, '${p.name}')">CERRAR</button>
+                <button class="proc-kill-btn" onclick="killProc(${p.pid}, '${p.name}')">${t('btn_kill')}</button>
               </div>
             </div>
           `;
         });
         container.innerHTML = html;
       } catch(e) {
-        container.innerHTML = '<p style="font-size: 11px; color: var(--rose);">Error al listar procesos.</p>';
+        container.innerHTML = `<p style="font-size: 11px; color: var(--rose);">${t('error_listing_processes')}</p>`;
       }
     }
 
     function killProc(pid, name) {
-      confirmModal('FINALIZAR PROCESO', `¿Deseas cerrar la tarea ${name} (PID: ${pid})?`, () => {
-        execAction('/api/processes/kill?pid=' + pid, 'Cerrando ' + name + '...');
+      confirmModal(t('modal_confirm_kill_title'), t('modal_confirm_kill_msg', { name, pid }), () => {
+        execAction('/api/processes/kill?pid=' + pid, t('toast_killing', { name }));
         setTimeout(loadProcesses, 1000);
       });
     }
 
     async function testChannel(channel) {
-      showToast('Enviando prueba a ' + channel + '...');
+      showToast(t('toast_testing_channel', { channel }));
       try {
         const res = await fetch('/api/test_notification?channel=' + channel, { method: 'POST' });
         const d = await res.json();
         showToast(d.msg);
       } catch(e) {
-        showToast('Error al enviar prueba');
+        showToast('Test failed');
       }
     }
 
     async function saveConfigSettings() {
-      showToast('Guardando ajustes...');
+      showToast(t('toast_saving_settings'));
       const payload = {
+        LANGUAGE: document.getElementById('cfg-language').value,
         DISCORD_ENABLED: document.getElementById('cfg-discord-enabled').checked,
         DISCORD_WEBHOOK_URL: document.getElementById('cfg-discord-url').value.trim(),
         TELEGRAM_ENABLED: document.getElementById('cfg-telegram-enabled').checked,
@@ -818,9 +923,9 @@
           body: JSON.stringify(payload)
         });
         const d = await res.json();
-        showToast(d.msg || 'Ajustes guardados con exito');
+        showToast(d.msg || t('toast_settings_saved'));
       } catch(e) {
-        showToast('Error al guardar ajustes');
+        showToast(t('toast_settings_error'));
       }
     }
   </script>

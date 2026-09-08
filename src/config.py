@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
     "SERVER_NAME": "OpenSentinel",
     "PORT": 8888,
     "HOST": "0.0.0.0",
+    "LANGUAGE": "en",
     "AUTO_ALERT_ON_BOOT": True,
 
     # Discord

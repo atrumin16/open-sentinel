@@ -7,6 +7,7 @@ Sends alerts and forensic photos directly to personal chats or Telegram groups.
 import datetime
 import requests
 from .base import BaseNotifier
+from ..i18n import t
 
 class TelegramNotifier(BaseNotifier):
     def is_enabled(self) -> bool:
@@ -24,20 +25,26 @@ class TelegramNotifier(BaseNotifier):
             return False
 
         chat_id = str(self.config.get("TELEGRAM_CHAT_ID", "")).strip()
+        lang = self.config.get("LANGUAGE", "en")
         now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        url_remote = net.get("url_remote") or "Inactiva (Sin Tailscale)"
+        url_remote = net.get("url_remote") or (t("inactive", lang) + " (No Tailscale)")
         url_local = net.get("url_local") or "http://127.0.0.1:8888"
 
-        text = (
-            f"🟢 *[OPENSENTINEL]* Nodo en Línea\n\n"
-            f"💻 *Estación:* `{hw['user']} @ {hw['hostname']}`\n"
-            f"⏱️ *Hora:* `{now_str}`\n"
-            f"⚡ *Hardware:* `{hw['cpu']}` | `{hw['gpu']}` | `{hw['ram']['total_gb']} GB RAM`\n"
-            f"🌐 *Red:* `{net['public_ip']}` ({net['isp']} - {net['location']})\n\n"
-            f"🔗 *ACCESO AL PANEL:*\n"
-            f"• [Panel Remoto (Tailscale)]({url_remote})\n"
-            f"• [Panel Local (LAN)]({url_local})"
+        text = t(
+            "telegram_boot_text",
+            lang,
+            user=hw['user'],
+            hostname=hw['hostname'],
+            time=now_str,
+            cpu=hw['cpu'],
+            gpu=hw['gpu'],
+            ram=hw['ram']['total_gb'],
+            public_ip=net['public_ip'],
+            isp=net['isp'],
+            location=net['location'],
+            url_remote=url_remote,
+            url_local=url_local
         )
 
         payload = {
@@ -59,8 +66,9 @@ class TelegramNotifier(BaseNotifier):
             return False
 
         chat_id = str(self.config.get("TELEGRAM_CHAT_ID", "")).strip()
+        lang = self.config.get("LANGUAGE", "en")
         now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        caption = f"🚨 *[{title}]*\n\n📋 *Motivo:* {reason}\n⏱️ *Hora:* `{now_str}`\n🛡️ *Estado:* Evidencia capturada desde RAM"
+        caption = t("telegram_evidence_caption", lang, title=title, reason=reason, time=now_str)
 
         files = {
             "photo": ("evidencia.jpg", img_bytes, "image/jpeg")
@@ -83,9 +91,10 @@ class TelegramNotifier(BaseNotifier):
             return {"success": False, "msg": "Telegram no esta habilitado o falta Token / Chat ID"}
 
         chat_id = str(self.config.get("TELEGRAM_CHAT_ID", "")).strip()
+        lang = self.config.get("LANGUAGE", "en")
         payload = {
             "chat_id": chat_id,
-            "text": "🔔 *[OpenSentinel]* Mensaje de prueba recibido correctamente en Telegram.",
+            "text": t("telegram_test_msg", lang),
             "parse_mode": "Markdown"
         }
 

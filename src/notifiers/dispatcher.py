@@ -13,6 +13,7 @@ from ..core.network import get_network_summary
 from .discord import DiscordNotifier
 from .telegram import TelegramNotifier
 from .whatsapp import WhatsAppNotifier
+from ..i18n import t
 
 def get_active_notifiers(config: dict) -> list:
     """Instancia todos los proveedores de notificación disponibles."""
@@ -25,6 +26,7 @@ def get_active_notifiers(config: dict) -> list:
 def dispatch_boot_alert(force=False) -> dict:
     """Envía la alerta de inicio a todos los canales habilitados evitando spam."""
     cfg = load_config()
+    lang = cfg.get("LANGUAGE", "en")
     current_boot_ts = int(psutil.boot_time())
 
     # Comprobación de Anti-Spam por sesión de arranque
@@ -36,7 +38,7 @@ def dispatch_boot_alert(force=False) -> dict:
                     return {
                         "sent": False,
                         "reason": "anti_spam_blocked",
-                        "msg": "Alerta de inicio ya enviada previamente para esta sesion de Windows."
+                        "msg": t("anti_spam_blocked", lang)
                     }
         except Exception:
             pass
@@ -73,9 +75,12 @@ def dispatch_boot_alert(force=False) -> dict:
         "msg": "Alertas transmitidas a los canales activos" if any_success else "Ningun canal activo o fallo en el envio"
     }
 
-def dispatch_evidence_alert(img_bytes: bytes, title="EVIDENCIA DE SEGURIDAD", reason="Auditoria Solicitada") -> dict:
+def dispatch_evidence_alert(img_bytes: bytes, title: str = None, reason: str = None) -> dict:
     """Transmite una foto de evidencia forense a todos los canales habilitados."""
     cfg = load_config()
+    lang = cfg.get("LANGUAGE", "en")
+    title = title or ("EVIDENCIA DE SEGURIDAD" if lang == "es" else "SECURITY EVIDENCE")
+    reason = reason or ("Auditoria Solicitada" if lang == "es" else "Security Audit Requested")
     notifiers = get_active_notifiers(cfg)
     results = {}
 

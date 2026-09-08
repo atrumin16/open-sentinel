@@ -6,44 +6,49 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6.svg?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![Co-Authored with Claude](https://img.shields.io/badge/Co--Authored%20with-Claude%20(Anthropic)-D97706.svg?style=flat-square&logo=anthropic&logoColor=white)](https://anthropic.com)
-[![Architecture: Zero-Cloud](https://img.shields.io/badge/Architecture-100%25%20Zero--Cloud-059669.svg?style=flat-square)](#privacidad-y-protocolos-de-seguridad)
-[![Forensics: RAM Buffer](https://img.shields.io/badge/Forensics-0%20MB%20Disk%20Wear-3B82F6.svg?style=flat-square)](#características-principales)
-[![Panic Lockdown](https://img.shields.io/badge/DEFCON--1-1ms%20Lockdown-EF4444.svg?style=flat-square)](#características-principales)
+[![Architecture: Zero-Cloud](https://img.shields.io/badge/Architecture-100%25%20Zero--Cloud-059669.svg?style=flat-square)](#privacy-and-security-protocols)
+[![Forensics: RAM Buffer](https://img.shields.io/badge/Forensics-0%20MB%20Disk%20Wear-3B82F6.svg?style=flat-square)](#key-features)
+[![Panic Lockdown](https://img.shields.io/badge/DEFCON--1-1ms%20Lockdown-EF4444.svg?style=flat-square)](#key-features)
 [![Discord Alerts](https://img.shields.io/badge/Alerts-Discord-5865F2.svg?style=flat-square&logo=discord&logoColor=white)](https://discord.com)
 [![Telegram Alerts](https://img.shields.io/badge/Alerts-Telegram-26A5E4.svg?style=flat-square&logo=telegram&logoColor=white)](https://telegram.org)
 [![WhatsApp Alerts](https://img.shields.io/badge/Alerts-WhatsApp-25D366.svg?style=flat-square&logo=whatsapp&logoColor=white)](https://whatsapp.com)
 
 **Lightweight, zero-cloud security sentinel, in-RAM forensic recorder, and remote PC telemetry console tailored for Windows workstations.**
 
-[Quick Start](#quick-start-instalación-paso-a-paso) · [Guía de Canales](#guía-de-configuración-de-canales) · [Características](#características-principales) · [Arquitectura](#arquitectura) · [API REST](#referencia-de-api-rest) · [FAQ](#faq--solución-de-problemas)
+[Quick Start](#quick-start-step-by-step-installation) · [Channel Setup](#channel-configuration-guide) · [Key Features](#key-features) · [Architecture](#architecture) · [REST API](#rest-api-reference) · [FAQ](#faq--troubleshooting)
+
+**English** · [Español](README.es.md)
 
 </div>
 
 ---
 
-## Visión General
+## Overview
 
-**OpenSentinel** es una solución centinela autónoma de ciberseguridad y telemetría en tiempo real para estaciones de trabajo Windows. Opera con un principio estricto de **cero dependencia en la nube**:
-1. Supervisa los arranques físicos de Windows y emite **estrictamente una sola alerta ejecutiva por sesión de encendido** a tus canales de mensajería (Discord, Telegram y WhatsApp), sin bucles de spam al reiniciar servicios.
-2. Mantiene una **cámara forense continua de 5 minutos** (captura de pantalla GDI + webcam PiP) almacenada **100% en memoria RAM** (0 MB de desgaste en SSD o disco duro).
-3. Dispone de un **protocolo de pánico DEFCON-1**: captura silenciosa de foto webcam en RAM, silenciado instantáneo de audio hardware y bloqueo inmediato de la sesión de Windows en **1 milisegundo**.
-4. Ofrece un **panel web glassmórfico de alta fidelidad** accesible localmente en red LAN o cifrado punto a punto en cualquier lugar mediante **Tailscale P2P**.
+**OpenSentinel** is an autonomous cybersecurity sentinel and real-time telemetry console designed for Windows workstations. It operates under a strict **zero-cloud dependency** architecture:
 
----
-
-## Características Principales
-
-* **Centinela Inteligente Anti-Spam:** Compara marcas temporales de arranque del kernel Windows (`boot_session.json`) para garantizar que **solo se envía 1 alerta por encendido físico**, evitando bucles de alertas si el script o servicio se reinicia.
-* **Difusión Multi-Canal:** Soporte nativo y simultáneo para **Webhooks de Discord**, **Bots de Telegram** y **WhatsApp** (vía CallMeBot o webhook propio).
-* **Consola Glassmórfica SPA:** Dashboard oscuro de baja latencia con medidores animados (CPU, RAM, detección dinámica de discos `C:`, `D:`, `E:`), ventana activa y control total de procesos.
-* **Búfer Forense en RAM (Rolling Ring Buffer):** Grabación continua de pantalla completa y webcam en anillo circular de memoria RAM. Exportable a vídeo MP4 con un solo clic ante cualquier incidente.
-* **Protocolo de Pánico DEFCON-1:** Gatillo de emergencia de 1 clic: foto sigilosa de la webcam, silenciado de altavoces y bloqueo instantáneo de la sesión de Windows.
-* **Conciencia de Carga de Trabajo (0% Overhead):** Detecta automáticamente cuándo se ejecutan juegos o tareas pesadas (Blender, simuladores, renderizadores) para pausar la grabación en RAM y mantener un **0.0% de impacto en el rendimiento**.
-* **Red Segura y P2P:** Sin abrir puertos en el router. Acceso seguro garantizado con Tailscale o proxy inverso Caddy integrado.
+1. **Anti-Spam Physical Boot Watchdog:** Monitors Windows boot events and dispatches **strictly one executive notification per physical boot session** across configured channels (Discord, Telegram, WhatsApp), completely eliminating notification spam loops during service restarts.
+2. **In-RAM Dual Forensic Recorder:** Continuously maintains a **5-minute rolling ring buffer** (native GDI screen capture + shared optical webcam PiP) stored **100% in volatile RAM** (0 MB wear on SSDs/HDDs).
+3. **DEFCON-1 Panic Lockdown Protocol:** Executes an emergency response in **1 millisecond**: stealth webcam evidence capture to RAM, hardware audio muting, and immediate Windows session lock.
+4. **Glassmorphic SPA Remote Dashboard:** Low-latency dark control console accessible locally over LAN or end-to-end encrypted from anywhere via **Tailscale P2P**.
+5. **Multi-Language Architecture (i18n):** Native bilingual support (English & Spanish) across the web dashboard, CLI configuration wizard, alert notifications, and REST API.
 
 ---
 
-## Arquitectura
+## Key Features
+
+* **Intelligent Anti-Spam Boot Lock:** Compares Windows kernel boot timestamps (`boot_session.json`) to guarantee **only 1 alert per physical machine boot**, eliminating repetitive notification floods.
+* **Multi-Channel Alert Broadcast:** Simultaneous native broadcasting to **Discord Webhooks**, **Telegram Bot API**, and **WhatsApp** (CallMeBot or custom webhook).
+* **Multi-Language (i18n):** Instant on-the-fly language switching (English / Español) across Web UI, CLI setup wizard, and alert notifications.
+* **Glassmorphic SPA Console:** Modern dark dashboard with animated gauges (CPU load, RAM memory, dynamic multi-drive detection `C:`, `D:`, `E:`), active window tracking, and process termination controls.
+* **In-RAM Rolling Forensic Buffer:** 5-minute continuous screen + webcam video buffer stored entirely in RAM. Compiles to MP4 video with a single click.
+* **DEFCON-1 Panic Lockdown:** Single-click panic trigger: silent optical snapshot, instant speaker silencing, and 1ms workstation lock.
+* **Workload-Aware Zero-Overhead:** Automatically detects gaming and heavy compute workloads (simulators, rendering software, 3D suites) to pause background capture and ensure **0.0% residual performance impact**.
+* **Secure P2P Networking:** Zero router port forwarding required. Direct authenticated access via Tailscale or integrated reverse proxy.
+
+---
+
+## Architecture
 
 ```
                                   +-----------------------+
@@ -78,141 +83,143 @@
 
 ---
 
-## Quick Start: Instalación Paso a Paso
+## Quick Start: Step-by-Step Installation
 
-### Paso 1: Requisitos Previos
-* **Sistema Operativo:** Windows 10 o Windows 11 (64 bits).
-* **Python:** Versión **3.10 o superior**. Asegúrate de marcar la casilla **"Add Python to PATH"** durante la instalación de Python.
-* **Git** (Opcional, para clonar el repositorio).
+### Step 1: Prerequisites
+* **Operating System:** Windows 10 or Windows 11 (64-bit).
+* **Python:** Version **3.10 or higher**. Ensure the **"Add Python to PATH"** checkbox is selected during Python installation.
+* **Git** (Optional, to clone the repository).
 
-### Paso 2: Descargar o Clonar
-Abre una terminal (PowerShell o CMD) y ejecuta:
+### Step 2: Download or Clone
+Open a terminal (PowerShell or CMD) and run:
 ```bash
 git clone https://github.com/atrumin16/open-sentinel.git
 cd open-sentinel
 ```
-*(O descarga el repositorio en ZIP desde GitHub y descomprímelo en tu carpeta personal).*
+*(Or download the repository ZIP file from GitHub and extract it to your preferred folder).*
 
-### Paso 3: Instalación en 1 Clic
-Haz **doble clic en `scripts/install.bat`** (o ejecuta en consola `python main.py --setup`):
-1. **Verificación Automática:** Instala dependencias (`requirements.txt`) silenciosamente.
-2. **Asistente Guiado:** Muestra la telemetría de tu PC y te guía para configurar tu nombre de equipo y tus canales de alerta.
-3. **Prueba en Vivo:** Envía un ping de prueba a tus canales configurados para verificar la conectividad antes de guardar.
-4. **Inicio Automático Silencioso:** Configura un acceso directo en el arranque de Windows mediante `run_hidden.vbs` para ejecutarse en segundo plano con **0% de consumo de CPU** y sin ventanas negras molestas.
+### Step 3: 1-Click Installation
+Double-click **`scripts/install.bat`** (or run `python main.py --setup` in terminal):
+1. **Dependency Verification:** Silently installs required packages (`requirements.txt`).
+2. **Language Selection:** Prompts for your preferred language (English or Spanish).
+3. **Telemetry & Setup:** Displays your workstation hardware specs and guides you to configure your server name and alert channels.
+4. **Live Connectivity Test:** Dispatches test pings to your configured notification channels to verify connectivity before saving.
+5. **Silent Windows Autostart:** Registers a background shortcut in the Windows Startup folder via `run_hidden.vbs` (**0% residual CPU usage** with no popup command prompt windows).
 
 ---
 
-## Guía de Configuración de Canales
+## Channel Configuration Guide
 
-El asistente `scripts/setup.bat` (o el panel de ajustes de la web) te permite activar los canales que desees:
+The interactive wizard `scripts/setup.bat` (or the Web Dashboard Settings tab) allows activating any combination of channels:
 
-### 1. Discord Webhooks (Recomendado)
-1. En tu servidor de Discord, entra en los ajustes de cualquier canal de texto: **Canal > Editar Canal (rueda dentada) > Integraciones**.
-2. Haz clic en **"Crear Webhook"** (o "Ver Webhooks").
-3. Asigna el nombre que quieras (ej: `OpenSentinel`) y haz clic en **"Copiar URL de Webhook"**.
-4. Pega la URL en el instalador (`https://discord.com/api/webhooks/...`).
+### 1. Discord Webhooks (Recommended)
+1. In your Discord server, open channel settings: **Channel > Edit Channel (gear icon) > Integrations**.
+2. Click **"Create Webhook"** (or "View Webhooks").
+3. Name your webhook (e.g. `OpenSentinel`) and click **"Copy Webhook URL"**.
+4. Paste the URL into the installer (`https://discord.com/api/webhooks/...`).
 
 ### 2. Telegram Bot API
-1. Abre Telegram y busca a **[@BotFather](https://t.me/botfather)**.
-2. Envía el comando `/newbot`, asigna un nombre y un usuario a tu bot.
-3. Copia el **HTTP API Token** proporcionado (ej: `123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ`).
-4. Para saber tu ID de usuario, abre **[@userinfobot](https://t.me/userinfobot)** y dale a `/start`. Te devolverá tu **Id** numérico.
-5. Pega el Token y tu Chat ID en el instalador.
+1. Open Telegram and search for **[@BotFather](https://t.me/botfather)**.
+2. Send `/newbot`, assign a name and username to your bot.
+3. Copy the provided **HTTP API Token** (e.g. `123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ`).
+4. To obtain your numerical Chat ID, open **[@userinfobot](https://t.me/userinfobot)** and press `/start`.
+5. Paste the Token and Chat ID into the installer.
 
-### 3. WhatsApp (vía CallMeBot)
-1. Añade el contacto **`+34 644 10 55 84`** a tu agenda de WhatsApp (o haz clic en [este enlace directo](https://wa.me/34644105584?text=I%20allow%20callmebot%20to%20send%20me%20messages)).
-2. Envíale este mensaje exacto:
+### 3. WhatsApp (via CallMeBot)
+1. Add **`+34 644 10 55 84`** to your phone contacts (or click [this direct link](https://wa.me/34644105584?text=I%20allow%20callmebot%20to%20send%20me%20messages)).
+2. Send this exact message via WhatsApp:
    ```text
    I allow callmebot to send me messages
    ```
-3. Recibirás un mensaje automático con tu **API Key** personal en segundos.
-4. En el asistente, introduce tu número en formato internacional (ej: `+34600112233`) y tu API Key.
+3. You will receive an automated reply with your personal **API Key** in seconds.
+4. Enter your phone number with international country code (e.g. `+34600112233`) and your API Key.
 
-### 4. Acceso Remoto Seguro (Tailscale P2P)
-Si deseas controlar tu PC desde tu móvil o fuera de casa sin abrir puertos en tu router:
-1. Instala **[Tailscale](https://tailscale.com/)** en tu PC y en tu teléfono móvil.
-2. Inicia sesión con la misma cuenta en ambos dispositivos.
-3. OpenSentinel detectará automáticamente tu IP de Tailscale (`100.x.y.z`).
-4. Accede desde tu móvil a: `http://<TU_IP_TAILSCALE>:8888`.
+### 4. Secure Remote Access (Tailscale P2P)
+To monitor and control your workstation from your smartphone without opening router ports:
+1. Install **[Tailscale](https://tailscale.com/)** on your PC and your phone.
+2. Sign in with the same account on both devices.
+3. OpenSentinel automatically detects your Tailscale IP (`100.x.y.z`).
+4. Access your dashboard securely from anywhere: `http://<TAILSCALE_IP>:8888`.
 
 ---
 
-## Gestión del Centinela en Segundo Plano
+## Background Service Management
 
-En la carpeta `scripts/` dispones de herramientas rápidas:
+The `scripts/` directory includes quick operational utilities:
 
-| Script | Acción |
+| Script | Action |
 | :--- | :--- |
-| **`scripts/install.bat`** | Instalador completo, dependencias, asistente y registro en inicio de Windows. |
-| **`scripts/start.bat`** | Inicia OpenSentinel silenciosamente en segundo plano. |
-| **`scripts/stop.bat`** | Detiene todos los procesos activos de OpenSentinel al instante. |
-| **`scripts/setup.bat`** | Abre el asistente de reconfiguración de canales en cualquier momento. |
-| **`scripts/uninstall.bat`** | Elimina el arranque automático silencioso del sistema de forma limpia. |
+| **`scripts/install.bat`** | Complete installer: dependencies, interactive setup wizard, and Windows startup registration. |
+| **`scripts/start.bat`** | Launches OpenSentinel silently in the background. |
+| **`scripts/stop.bat`** | Instantly terminates all active OpenSentinel processes. |
+| **`scripts/setup.bat`** | Opens the channel reconfiguration wizard at any time. |
+| **`scripts/uninstall.bat`** | Cleanly removes the background autostart shortcut and stops active instances. |
 
 ---
 
-## Privacidad y Protocolos de Seguridad
+## Privacy and Security Protocols
 
-* **Filtrado de IPs por Defecto:** El servidor web solo acepta conexiones procedentes de subredes privadas locales (`192.168.*`, `10.*`, `172.*`, `127.0.0.1`) y de la malla P2P de Tailscale (`100.*`). Peticiones públicas externas son rechazadas automáticamente.
-* **Forense Cero-Desgaste:** Las capturas en búfer continuo se mantienen en memoria RAM volátil. No se escribe ni un solo byte en disco hasta que el usuario pulsa explícitamente "Generar Clip Forense".
-* **Higiene de Credenciales:** `config.json` y `boot_session.json` están excluidos del control de versiones mediante `.gitignore`.
+* **Default IP Filtering:** The web server strictly accepts connections originating from private subnets (`192.168.*`, `10.*`, `172.*`, `127.0.0.1`) and the Tailscale P2P mesh (`100.*`). Public internet requests are rejected automatically with HTTP 403.
+* **Zero-Wear Forensics:** Rolling buffer frames are maintained exclusively in volatile RAM. Zero bytes are written to disk until the user explicitly requests an export.
+* **Credential Hygiene:** `config.json` and `boot_session.json` are excluded from version control via `.gitignore`.
 
 ---
 
-## Referencia de API REST
+## REST API Reference
 
-| Endpoint | Método | Descripción |
+| Endpoint | Method | Description |
 | :--- | :--- | :--- |
-| `/api/stats` | `GET` | Telemetría en tiempo real: CPU, RAM, discos dinámicos, ventana activa. |
-| `/api/processes` | `GET` | Lista de procesos principales ordenados por consumo de RAM. |
-| `/api/processes/kill?pid=X` | `POST` | Termina un proceso de forma segura según su PID. |
-| `/api/screenshot` | `GET` | Captura de pantalla nativa GDI en tiempo real. |
-| `/api/webcam` | `GET` | Fotograma óptico de la cámara web. |
-| `/api/generate_clip` | `POST` | Compila el búfer de RAM de 5 minutos en un clip MP4. |
-| `/api/defcon/panic` | `POST` | Ejecuta el protocolo DEFCON-1: foto sigilosa, silenciado de audio y bloqueo. |
-| `/api/power/lock` | `POST` | Bloquea la sesión de usuario de Windows. |
-| `/api/power/sleep` | `POST` | Pone la estación de trabajo en suspensión S3. |
-| `/api/power/shutdown` | `POST` | Programa apagado seguro con margen de 10 segundos. |
-| `/api/power/reboot` | `POST` | Programa reinicio seguro con margen de 10 segundos. |
-| `/api/power/cancel` | `POST` | Cancela un apagado o reinicio programado. |
-| `/api/power/wake_screen` | `POST` | Despierta los monitores y el compositor DWM. |
-| `/api/config` | `GET/POST` | Lee o actualiza los ajustes en caliente. |
-| `/api/test_notification` | `POST` | Dispara un mensaje de prueba a `discord`, `telegram` o `whatsapp`. |
+| `/api/stats` | `GET` | Real-time telemetry: CPU, RAM, dynamic multi-drives, uptime, active window. |
+| `/api/processes` | `GET` | Top processes sorted by RAM consumption. |
+| `/api/processes/kill?pid=X` | `POST` | Safely terminates a process by PID. |
+| `/api/screenshot` | `GET` | Real-time native GDI screen capture. |
+| `/api/webcam` | `GET` | Live optical webcam frame. |
+| `/api/generate_clip` | `POST` | Compiles the 5-minute RAM buffer into a downloadable MP4 video. |
+| `/api/defcon/panic` | `POST` | Triggers DEFCON-1: silent photo grab, hardware audio mute, 1ms workstation lock. |
+| `/api/power/lock` | `POST` | Locks the current Windows user session. |
+| `/api/power/sleep` | `POST` | Places the workstation into S3 sleep state. |
+| `/api/power/shutdown` | `POST` | Schedules clean workstation shutdown (10-second safety window). |
+| `/api/power/reboot` | `POST` | Schedules clean workstation reboot (10-second safety window). |
+| `/api/power/cancel` | `POST` | Aborts a scheduled shutdown or reboot. |
+| `/api/power/wake_screen` | `POST` | Wakes monitors and desktop window manager (DWM). |
+| `/api/config` | `GET/POST` | Reads or updates settings on the fly (including language preference). |
+| `/api/i18n` | `GET` | Fetches translation dictionary for the requested or all languages. |
+| `/api/test_notification` | `POST` | Dispatches a live test alert to `discord`, `telegram`, or `whatsapp`. |
 
 ---
 
-## FAQ & Solución de Problemas
+## FAQ & Troubleshooting
 
 <details>
-<summary><b>1. Python no se reconoce como comando interno o externo</b></summary>
-Asegúrate de reinstalar Python desde <a href="https://www.python.org/downloads/">python.org</a> y marcar la casilla <b>"Add Python to PATH"</b> en la primera pantalla del instalador. Reinicia la consola tras completarlo.
+<summary><b>1. 'python' is not recognized as an internal or external command</b></summary>
+Re-run the Python installer from <a href="https://www.python.org/downloads/">python.org</a> and make sure to check the box <b>"Add Python to PATH"</b> on the very first screen. Restart your terminal afterwards.
 </details>
 
 <details>
-<summary><b>2. Aparece la alerta del Firewall de Windows</b></summary>
-Haz clic en <b>"Permitir acceso"</b> asegurándote de que la casilla <i>"Redes privadas"</i> esté marcada. OpenSentinel necesita escuchar en el puerto 8888 para que puedas conectarte desde tu red local o Tailscale.
+<summary><b>2. Windows Defender Firewall prompt appears</b></summary>
+Click <b>"Allow access"</b> ensuring the <i>"Private networks"</i> checkbox is enabled. OpenSentinel needs to bind port 8888 so you can access the dashboard over LAN or Tailscale.
 </details>
 
 <details>
-<summary><b>3. La cámara web muestra pantalla negra en el panel</b></summary>
-En Windows 10/11, abre <b>Configuración > Privacidad y Seguridad > Cámara</b> y comprueba que <i>"Permitir que las aplicaciones de escritorio accedan a la cámara"</i> esté activado.
+<summary><b>3. Webcam feed displays a black screen</b></summary>
+In Windows 10/11, open <b>Settings > Privacy & Security > Camera</b> and ensure <i>"Let desktop apps access your camera"</i> is turned ON.
 </details>
 
 <details>
-<summary><b>4. ¿Cómo compruebo si OpenSentinel está activo en segundo plano?</b></summary>
-Abre tu navegador y entra en <a href="http://127.0.0.1:8888">http://127.0.0.1:8888</a>. Si el panel carga, el centinela está protegiendo la estación de trabajo. También puedes verificar el Administrador de Tareas (busca el proceso <code>pythonw.exe</code>).
+<summary><b>4. How do I verify OpenSentinel is running in the background?</b></summary>
+Open your browser and navigate to <a href="http://127.0.0.1:8888">http://127.0.0.1:8888</a>. If the console loads, the sentinel is actively protecting the workstation. You can also inspect Task Manager for the <code>pythonw.exe</code> process.
 </details>
 
 ---
 
-## Créditos de Ingeniería y Co-Autoría
+## Engineering Credits & Co-Authorship
 
-OpenSentinel ha sido diseñado, construido y fortificado mediante arquitectura de alta fiabilidad por:
-* **Alberto Trujillo Mingorance** ([@atrumin16](https://github.com/atrumin16)) — Arquitectura de sistemas, telemetría hardware de bajo nivel, motor forense en RAM y diseño del protocolo DEFCON-1.
-* **Claude** ([Anthropic](https://anthropic.com)) — Co-autoría en el diseño de protocolos centinela de confianza cero, pipelines de alerta asíncronos y robustecimiento del código.
+OpenSentinel was engineered, built, and fortified with high-reliability zero-trust architecture by:
+* **Alberto Trujillo Mingorance** ([@atrumin16](https://github.com/atrumin16)) — Systems architecture, low-level hardware telemetry, in-RAM forensic engine, and DEFCON-1 panic protocol design.
+* **Claude** ([Anthropic](https://anthropic.com)) — Co-authorship in zero-trust sentinel protocol design, asynchronous alert pipelines, and codebase hardening.
 
 ---
 
-## Licencia
+## License
 
-Distribuido bajo la Licencia **MIT**. Consulta [`LICENSE`](LICENSE) para más información.
+Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for full details.

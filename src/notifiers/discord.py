@@ -8,6 +8,7 @@ import datetime
 import json
 import requests
 from .base import BaseNotifier
+from ..i18n import t
 
 class DiscordNotifier(BaseNotifier):
     def is_enabled(self) -> bool:
@@ -22,6 +23,7 @@ class DiscordNotifier(BaseNotifier):
         webhook_url = self.config.get("DISCORD_WEBHOOK_URL", "").strip()
         thread_id = self.config.get("DISCORD_THREAD_ID", "").strip()
         server_name = self.config.get("SERVER_NAME", "OpenSentinel")
+        lang = self.config.get("LANGUAGE", "en")
         iso_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
@@ -29,45 +31,45 @@ class DiscordNotifier(BaseNotifier):
         url_local = net.get("url_local") or "http://127.0.0.1:8888"
 
         if url_remote:
-            remote_line = f"• 🚀 **Acceso Remoto (Tailscale P2P):** [Abrir Panel Remoto]({url_remote})"
+            remote_line = t("discord_remote_active", lang, url=url_remote)
         else:
-            remote_line = "• 🚀 **Acceso Remoto (Tailscale P2P):** *No disponible en el arranque*"
+            remote_line = t("discord_remote_inactive", lang)
 
-        local_line = f"• 🏠 **Acceso Local (Red Doméstica LAN):** [Abrir Panel Local]({url_local})"
+        local_line = t("discord_local_link", lang, url=url_local)
 
         embed = {
-            "title": f"🟢 SISTEMA EN LÍNEA // {hw['hostname'].upper()}",
+            "title": t("discord_boot_title", lang, hostname=hw['hostname'].upper()),
             "description": (
-                f"**CENTRO DE CONTROL REMOTO DISPONIBLE:**\n"
+                f"{t('discord_boot_desc_header', lang)}\n"
                 f"{remote_line}\n"
                 f"{local_line}"
             ),
-            "color": 0x38BDF8,  # Azul Cyan
+            "color": 0x38BDF8,  # Cyan
             "timestamp": iso_timestamp,
             "fields": [
                 {
-                    "name": "💻 Estación & Usuario",
+                    "name": t("discord_field_station", lang),
                     "value": f"`{hw['user']} @ {hw['hostname']}`",
                     "inline": True
                 },
                 {
-                    "name": "⏱️ Hora de Conexión",
+                    "name": t("discord_field_conn_time", lang),
                     "value": f"`{now_str}`",
                     "inline": True
                 },
                 {
-                    "name": "⚡ Especificaciones de Hardware",
+                    "name": t("discord_field_hw", lang),
                     "value": f"• **CPU:** `{hw['cpu']}`\n• **GPU:** `{hw['gpu']}`\n• **RAM:** `{hw['ram']['total_gb']} GB`",
                     "inline": False
                 },
                 {
-                    "name": "🌐 Red & Enlace de Seguridad",
-                    "value": f"• **IP Pública:** `{net['public_ip']}` ({net['isp']} - {net['location']})\n• **IP Tailscale:** `{net['tailscale_ip'] or 'Inactiva'}`\n• **IP LAN:** `{net['local_lan_ip']}`",
+                    "name": t("discord_field_network", lang),
+                    "value": f"• **{t('field_public_ip', lang)}:** `{net['public_ip']}` ({net['isp']} - {net['location']})\n• **{t('field_tailscale_ip', lang)}:** `{net['tailscale_ip'] or t('inactive', lang)}`\n• **{t('field_lan_ip', lang)}:** `{net['local_lan_ip']}`",
                     "inline": False
                 }
             ],
             "footer": {
-                "text": f"{server_name} • Sesión de Inicio Verificada",
+                "text": t("discord_footer_boot", lang, server_name=server_name),
                 "icon_url": "https://cdn-icons-png.flaticon.com/512/906/906338.png"
             }
         }
@@ -96,18 +98,19 @@ class DiscordNotifier(BaseNotifier):
         webhook_url = self.config.get("DISCORD_WEBHOOK_URL", "").strip()
         thread_id = self.config.get("DISCORD_THREAD_ID", "").strip()
         server_name = self.config.get("SERVER_NAME", "OpenSentinel")
+        lang = self.config.get("LANGUAGE", "en")
         now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         payload = {
             "username": server_name,
             "avatar_url": "https://cdn-icons-png.flaticon.com/512/906/906338.png",
-            "content": f"### [SENTINEL // AUDITORÍA FORENSE] {reason}\n> **Hora:** `{now_str}`",
+            "content": t("discord_evidence_content", lang, reason=reason, time=now_str),
             "embeds": [{
                 "title": title,
-                "description": f"**Motivo:** {reason}\n**Seguridad:** Evidencia capturada desde RAM.",
-                "color": 0xF43F5E if "DEFCON" in title or "Intruso" in reason else 0xF59E0B,
+                "description": t("discord_evidence_desc", lang, reason=reason),
+                "color": 0xF43F5E if "DEFCON" in title or "Intruso" in reason or "Intruder" in reason else 0xF59E0B,
                 "image": {"url": "attachment://evidencia.jpg"},
-                "footer": {"text": f"{server_name} | Registro Forense"}
+                "footer": {"text": t("discord_evidence_footer", lang, server_name=server_name)}
             }]
         }
 
@@ -131,10 +134,11 @@ class DiscordNotifier(BaseNotifier):
         if not self.is_enabled():
             return {"success": False, "msg": "Discord no esta habilitado o falta la URL del Webhook"}
         
+        lang = self.config.get("LANGUAGE", "en")
         webhook_url = self.config.get("DISCORD_WEBHOOK_URL", "").strip()
         payload = {
             "username": self.config.get("SERVER_NAME", "OpenSentinel"),
-            "content": "🔔 **[OpenSentinel]** Mensaje de prueba recibido correctamente desde el panel de control."
+            "content": t("discord_test_msg", lang)
         }
         try:
             resp = requests.post(webhook_url, json=payload, timeout=5)
