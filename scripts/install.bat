@@ -69,7 +69,7 @@ echo.
 
 :: 5. Detener instancias previas e iniciar
 echo [5/5] Iniciando OpenSentinel en segundo plano...
-powershell -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*open-sentinel\main.py*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>&1
+powershell -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*main.py*' -and ($_.CommandLine -like '*sentinel*' -or $_.CommandLine -like '*OpenSentinel*') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>&1
 wscript.exe "%ROOT_DIR%\scripts\run_hidden.vbs"
 timeout /t 2 /nobreak >nul
 

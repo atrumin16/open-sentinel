@@ -41,6 +41,7 @@ def run_interactive_wizard():
   \___/| .__/ \___|_| |_|____/ \___|_| |_|\__|_|_| |_|\___|_|
        |_|                                                   
           ASISTENTE INTERACTIVO DE CONFIGURACION // v1.0
+          Engineered by Alberto Trujillo & Claude (Anthropic)
  ================================================================
     """)
 
@@ -58,7 +59,7 @@ def run_interactive_wizard():
     if net["tailscale_ip"]:
         print(f"   • IP Tailscale:    {net['tailscale_ip']} (P2P Activo)")
     else:
-        print(f"   • IP Tailscale:    No detectada (opcional)")
+        print(f"   • IP Tailscale:    No detectada (Instala Tailscale si deseas acceso fuera de casa)")
     print(" ----------------------------------------------------------------")
     print()
 
@@ -78,13 +79,16 @@ def run_interactive_wizard():
 
     # 2. Discord
     print(" [3/5] CANAL DE ALERTAS DISCORD (RECOMENDADO):")
+    print("   💡 GUIA RAPIDA DISCORD:")
+    print("      1. En tu servidor Discord: Canal de texto -> Editar Canal (engranaje) -> Integraciones.")
+    print("      2. Haz clic en 'Crear Webhook' -> 'Copiar URL de Webhook'.")
     discord_enabled = prompt_bool("¿Deseas activar alertas en Discord?", default=cfg.get("DISCORD_ENABLED", True))
     discord_url = cfg.get("DISCORD_WEBHOOK_URL", "")
     discord_thread = cfg.get("DISCORD_THREAD_ID", "")
 
     if discord_enabled:
         discord_url = prompt_input("URL del Webhook de Discord (https://discord.com/api/webhooks/...)", default=discord_url)
-        discord_thread = prompt_input("ID del Hilo/Thread de Discord (Opcional, dejar vacio si no usas)", default=discord_thread)
+        discord_thread = prompt_input("ID del Hilo/Thread de Discord (Opcional, pulsar Enter para omitir)", default=discord_thread)
 
         if discord_url and discord_url.startswith("http"):
             if prompt_bool("¿Deseas enviar un mensaje de prueba a Discord ahora?", default=True):
@@ -107,6 +111,9 @@ def run_interactive_wizard():
 
     # 3. Telegram
     print(" [4/5] CANALES DE ALERTAS TELEGRAM & WHATSAPP (OPCIONALES):")
+    print("   💡 GUIA RAPIDA TELEGRAM:")
+    print("      1. Abre Telegram y busca @BotFather -> envía /newbot para obtener el TOKEN.")
+    print("      2. Busca @userinfobot en Telegram -> envía /start para ver tu Chat ID.")
     telegram_enabled = prompt_bool("¿Deseas activar alertas por Telegram?", default=cfg.get("TELEGRAM_ENABLED", False))
     telegram_token = cfg.get("TELEGRAM_BOT_TOKEN", "")
     telegram_chat_id = cfg.get("TELEGRAM_CHAT_ID", "")
@@ -127,6 +134,10 @@ def run_interactive_wizard():
                 res = TelegramNotifier(test_cfg).send_test_message()
                 print(f"   {'✅' if res.get('success') else '⚠️'} {res.get('msg')}")
 
+    print("   💡 GUIA RAPIDA WHATSAPP (CallMeBot):")
+    print("      1. Guarda en contactos: +34 644 10 55 84.")
+    print("      2. Envía por WhatsApp: 'I allow callmebot to send me messages'.")
+    print("      3. Recibirás tu API Key en 10 segundos.")
     whatsapp_enabled = prompt_bool("¿Deseas activar alertas por WhatsApp?", default=cfg.get("WHATSAPP_ENABLED", False))
     wa_phone = cfg.get("WHATSAPP_PHONE", "")
     wa_key = cfg.get("WHATSAPP_API_KEY", "")
@@ -181,5 +192,10 @@ def run_interactive_wizard():
     print(f"  • Red LAN:           http://{net['local_lan_ip']}:{port}")
     if net["tailscale_ip"]:
         print(f"  • Enlace Tailscale:  http://{net['tailscale_ip']}:{port}")
+    print(" ================================================================")
+    print(" 🚀 PROXIMOS PASOS:")
+    print("  • Iniciar en segundo plano:   Haz doble clic en scripts/start.bat")
+    print("  • Detener en cualquier momento: Haz doble clic en scripts/stop.bat")
+    print("  • Reconfigurar opciones:       Haz doble clic en scripts/setup.bat")
     print(" ================================================================")
     print()
